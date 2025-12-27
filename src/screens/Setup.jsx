@@ -60,71 +60,69 @@ const TIPS = [
 export function Setup({ state, dispatch }){
   const [cards, setCards] = useState(TIPS);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const [isSwiping, setIsSwiping] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [startY, setStartY] = useState(0);
-  const [currentX, setCurrentX] = useState(0);
-  const [currentY, setCurrentY] = useState(0);
-  const cardStackRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [isAnimating, setIsAnimating] = useState(false);
 
-  const handleStart = (clientX, clientY) => {
-    setIsSwiping(true);
-    setStartX(clientX);
-    setStartY(clientY);
-    setCurrentX(clientX);
-    setCurrentY(clientY);
+  const handleStart = (clientX, clientY, e) => {
+    // Prevenir si es un botón o enlace
+    if (e.target.closest('.btn') || e.target.closest('a')) return;
+    
+    setIsDragging(true);
+    setStartPos({ x: clientX, y: clientY });
+    setOffset({ x: 0, y: 0 });
   };
 
   const handleMove = (clientX, clientY) => {
-    if (!isSwiping) return;
-    setCurrentX(clientX);
-    setCurrentY(clientY);
+    if (!isDragging || isAnimating) return;
+    
+    const deltaX = clientX - startPos.x;
+    const deltaY = clientY - startPos.y;
+    
+    setOffset({ x: deltaX, y: deltaY });
   };
 
   const handleEnd = () => {
-    if (!isSwiping) return;
+    if (!isDragging || isAnimating) return;
     
-    const deltaX = currentX - startX;
-    const deltaY = currentY - startY;
-    const threshold = 100;
+    const threshold = 80;
+    const absX = Math.abs(offset.x);
 
-    // Detectar dirección de swipe
-    if (Math.abs(deltaX) > Math.abs(deltaY)) {
-      // Swipe horizontal
-      if (Math.abs(deltaX) > threshold) {
-        moveToBack();
-      }
+    if (absX > threshold) {
+      // Activar animación de salida
+      setIsAnimating(true);
+      
+      // Mover carta al final después de la animación
+      setTimeout(() => {
+        setCards(prev => {
+          const newCards = [...prev];
+          const topCard = newCards.shift();
+          newCards.push(topCard);
+          return newCards;
+        });
+        setCurrentCardIndex((prev) => (prev + 1) % TIPS.length);
+        setOffset({ x: 0, y: 0 });
+        setIsAnimating(false);
+      }, 300);
+    } else {
+      // Volver a la posición original
+      setOffset({ x: 0, y: 0 });
     }
-
-    setIsSwiping(false);
-    setStartX(0);
-    setStartY(0);
-    setCurrentX(0);
-    setCurrentY(0);
-  };
-
-  const moveToBack = () => {
-    // Mover la primera carta al final del array
-    setTimeout(() => {
-      setCards(prev => {
-        const newCards = [...prev];
-        const topCard = newCards.shift();
-        newCards.push(topCard);
-        return newCards;
-      });
-      setCurrentCardIndex((prev) => (prev + 1) % TIPS.length);
-    }, 300);
+    
+    setIsDragging(false);
   };
 
   // Event handlers para touch
   const handleTouchStart = (e) => {
-    handleStart(e.touches[0].clientX, e.touches[0].clientY);
+    handleStart(e.touches[0].clientX, e.touches[0].clientY, e);
   };
 
   const handleTouchMove = (e) => {
-    if (!isSwiping) return;
-    e.preventDefault();
-    handleMove(e.touches[0].clientX, e.touches[0].clientY);
+    if (isDragging) {
+      e.preventDefault();
+      handleMove(e.touches[0].clientX, e.touches[0].clientY);
+    }
   };
 
   const handleTouchEnd = () => {
@@ -133,30 +131,16 @@ export function Setup({ state, dispatch }){
 
   // Event handlers para mouse
   const handleMouseDown = (e) => {
-    handleStart(e.clientX, e.clientY);
+    handleStart(e.clientX, e.clientY, e);
   };
 
   const handleMouseMove = (e) => {
-    if (!isSwiping) return;
     handleMove(e.clientX, e.clientY);
   };
 
   const handleMouseUp = () => {
     handleEnd();
   };
-
-  const handleMouseLeave = () => {
-    if (isSwiping) {
-      handleEnd();
-    }
-  };
-
-  // Calcular transformación de swipe
-  const swipeX = isSwiping ? currentX - startX : 0;
-  const swipeY = isSwiping ? currentY - startY : 0;
-  const maxSwipe = 250;
-  const swipeProgress = Math.min(Math.abs(swipeX) / maxSwipe, 1);
-  const swipeRotate = (swipeX / maxSwipe) * 25;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -248,39 +232,48 @@ export function Setup({ state, dispatch }){
         </p>
 
         <div 
-          ref={cardStackRef}
           className="card-stack-wrapper"
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseLeave}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
           style={{
             position: 'relative',
             width: '100%',
             height: '450px',
-            perspective: '1000px',
+            perspective: '1200px',
             userSelect: 'none',
             WebkitUserSelect: 'none',
             touchAction: 'pan-y'
           }}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
         >
-          <div className="card-stack">
+          <div className="card-stack" style={{ position: 'relative', width: '100%', height: '100%' }}>
             {cards.map((tip, index) => {
-              const zIndex = cards.length - index;
               const isTopCard = index === 0;
-              const scale = 1 - (index * 0.03);
-              const yOffset = index * 12;
-              const zOffset = index * -15;
+              const zIndex = cards.length - index;
               
-              // Solo aplicar transformación de swipe a la carta superior
-              const transform = isTopCard && isSwiping
-                ? `translateX(${swipeX}px) translateY(${swipeY * 0.3}px) rotateZ(${swipeRotate}deg) scale(${scale}) translateY(${yOffset}px) translateZ(${zOffset}px)`
-                : `scale(${scale}) translateY(${yOffset}px) translateZ(${zOffset}px)`;
+              // Escalado y posicionamiento para efecto de stack
+              const scale = 1 - (index * 0.05);
+              const yOffset = index * 8;
+              const blur = index > 0 ? index * 2 : 0;
               
-              const opacity = index > 2 ? 0 : 1 - (index * 0.25);
+              // Opacidad para cartas traseras
+              let opacity = 1;
+              if (index === 1) opacity = 0.7;
+              if (index === 2) opacity = 0.5;
+              if (index > 2) opacity = 0;
+              
+              // Transformación para la carta superior
+              let transform = `scale(${scale}) translateY(${yOffset}px)`;
+              
+              if (isTopCard) {
+                if (isDragging && !isAnimating) {
+                  const rotation = (offset.x / 20);
+                  transform = `translateX(${offset.x}px) translateY(${offset.y * 0.1}px) rotate(${rotation}deg) scale(${scale})`;
+                } else if (isAnimating) {
+                  const direction = offset.x > 0 ? 1 : -1;
+                  transform = `translateX(${direction * 500}px) rotate(${direction * 30}deg) scale(0.8)`;
+                }
+              }
 
               return (
                 <div
@@ -295,13 +288,18 @@ export function Setup({ state, dispatch }){
                     zIndex: zIndex,
                     transform: transform,
                     opacity: opacity,
-                    transition: isTopCard && isSwiping 
+                    filter: `blur(${blur}px)`,
+                    transition: (isDragging && isTopCard) || isAnimating
                       ? 'none' 
-                      : 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                    cursor: isTopCard ? (isSwiping ? 'grabbing' : 'grab') : 'default',
+                      : 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                    cursor: isTopCard ? (isDragging ? 'grabbing' : 'grab') : 'default',
                     pointerEvents: isTopCard ? 'auto' : 'none',
                     transformStyle: 'preserve-3d'
                   }}
+                  onMouseDown={isTopCard ? handleMouseDown : undefined}
+                  onTouchStart={isTopCard ? handleTouchStart : undefined}
+                  onTouchMove={isTopCard ? handleTouchMove : undefined}
+                  onTouchEnd={isTopCard ? handleTouchEnd : undefined}
                 >
                   <div className="tip-card-content">
                     <div style={{ textAlign: 'center', fontSize: '3.5rem', marginBottom: '16px' }}>
