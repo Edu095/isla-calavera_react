@@ -25,12 +25,13 @@
   --border-color: #5a3d2b;      /* Marrón borde */
   --shadow-color: rgba(0,0,0,0.6);
   
-  /* Wooden box colors */
-  --wood-light: #8b6f47;        /* Madera clara */
-  --wood-medium: #6b5639;       /* Madera media */
-  --wood-dark: #4a3827;         /* Madera oscura */
+  /* Realistic wooden box colors */
+  --wood-light: #b89968;        /* Madera clara */
+  --wood-medium: #8b6f47;       /* Madera media */
+  --wood-dark: #6b5639;         /* Madera oscura */
+  --wood-darker: #4a3827;       /* Madera muy oscura */
   --wood-border: #3a2817;       /* Borde madera */
-  --wood-highlight: #a88658;    /* Resalte madera */
+  --wood-highlight: #d4b896;    /* Resalte madera */
   
   /* Spacing */
   --spacing-xs: 4px;
@@ -262,65 +263,77 @@ h3 {
 }
 
 /* ============================================
-   WOODEN BOX CARDS
+   WOODEN BOX CARDS - REALISTIC PLANKS
    ============================================ */
 
 .wooden-box {
   position: relative;
-  background: linear-gradient(135deg, var(--wood-medium) 0%, var(--wood-dark) 100%);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-lg);
+  background: 
+    /* Horizontal planks pattern */
+    linear-gradient(180deg, 
+      var(--wood-light) 0%, 
+      var(--wood-medium) 20%,
+      var(--wood-dark) 40%,
+      var(--wood-medium) 60%,
+      var(--wood-light) 80%,
+      var(--wood-medium) 100%
+    );
+  border-radius: var(--radius-sm);
+  padding: calc(var(--spacing-lg) + 12px);
   color: var(--text-primary);
   
-  /* 3D wooden border effect */
-  border: 8px solid;
+  /* Thick 3D wooden frame */
+  border: 12px solid;
   border-color: 
     var(--wood-highlight) 
-    var(--wood-dark) 
-    var(--wood-dark) 
+    var(--wood-darker) 
+    var(--wood-darker) 
     var(--wood-highlight);
   
   /* Deep shadow for 3D effect */
   box-shadow: 
-    0 8px 16px rgba(0,0,0,0.6),
-    inset 0 1px 0 rgba(255,255,255,0.1),
-    inset 0 -1px 0 rgba(0,0,0,0.5),
-    /* Side panels illusion */
-    -3px 0 8px rgba(0,0,0,0.3) inset,
-    3px 0 8px rgba(0,0,0,0.3) inset;
+    0 12px 24px rgba(0,0,0,0.7),
+    inset 0 2px 0 rgba(255,255,255,0.15),
+    inset 0 -2px 0 rgba(0,0,0,0.6),
+    inset -4px 0 12px rgba(0,0,0,0.4),
+    inset 4px 0 12px rgba(0,0,0,0.4);
   
   transition: transform var(--transition-normal), box-shadow var(--transition-normal);
 }
 
-/* Wood grain texture overlay */
+/* Realistic wood grain texture with vertical lines */
 .wooden-box::before {
   content: '';
   position: absolute;
-  top: -8px;
-  left: -8px;
-  right: -8px;
-  bottom: -8px;
-  border-radius: var(--radius-md);
+  top: -12px;
+  left: -12px;
+  right: -12px;
+  bottom: -12px;
+  border-radius: var(--radius-sm);
   background: 
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 3px,
-      rgba(0,0,0,0.1) 3px,
-      rgba(0,0,0,0.1) 4px
-    ),
+    /* Vertical wood grain */
     repeating-linear-gradient(
       0deg,
       transparent,
-      transparent 80px,
-      rgba(0,0,0,0.05) 80px,
-      rgba(0,0,0,0.05) 82px
+      transparent 1px,
+      rgba(0,0,0,0.08) 1px,
+      rgba(0,0,0,0.08) 2px
+    ),
+    /* Subtle horizontal planks */
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 40px,
+      rgba(0,0,0,0.15) 40px,
+      rgba(0,0,0,0.15) 44px,
+      rgba(255,255,255,0.05) 44px,
+      rgba(255,255,255,0.05) 45px
     );
   pointer-events: none;
   z-index: 1;
 }
 
-/* Wood knots and imperfections */
+/* Wood knots, scratches and natural imperfections */
 .wooden-box::after {
   content: '';
   position: absolute;
@@ -328,11 +341,16 @@ h3 {
   left: 0;
   right: 0;
   bottom: 0;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   background: 
-    radial-gradient(ellipse at 15% 25%, rgba(0,0,0,0.2) 0%, transparent 8%),
-    radial-gradient(ellipse at 75% 60%, rgba(0,0,0,0.15) 0%, transparent 6%),
-    radial-gradient(ellipse at 45% 80%, rgba(0,0,0,0.1) 0%, transparent 5%);
+    /* Wood knots */
+    radial-gradient(ellipse at 20% 25%, rgba(0,0,0,0.3) 0%, transparent 4%),
+    radial-gradient(ellipse at 85% 60%, rgba(0,0,0,0.25) 0%, transparent 3%),
+    radial-gradient(ellipse at 45% 80%, rgba(0,0,0,0.2) 0%, transparent 2.5%),
+    radial-gradient(ellipse at 70% 15%, rgba(0,0,0,0.15) 0%, transparent 2%),
+    /* Scratches and wear */
+    linear-gradient(85deg, transparent 30%, rgba(0,0,0,0.1) 30.5%, transparent 31%),
+    linear-gradient(92deg, transparent 55%, rgba(255,255,255,0.05) 55.5%, transparent 56%);
   pointer-events: none;
   z-index: 1;
 }
@@ -346,30 +364,46 @@ h3 {
 .wooden-box:hover {
   transform: translateY(-2px);
   box-shadow: 
-    0 12px 24px rgba(0,0,0,0.7),
-    inset 0 1px 0 rgba(255,255,255,0.15),
-    inset 0 -1px 0 rgba(0,0,0,0.5),
-    -3px 0 8px rgba(0,0,0,0.3) inset,
-    3px 0 8px rgba(0,0,0,0.3) inset;
+    0 16px 32px rgba(0,0,0,0.8),
+    inset 0 2px 0 rgba(255,255,255,0.2),
+    inset 0 -2px 0 rgba(0,0,0,0.6),
+    inset -4px 0 12px rgba(0,0,0,0.4),
+    inset 4px 0 12px rgba(0,0,0,0.4);
 }
 
 /* Variation: Light wooden box */
 .wooden-box-light {
-  background: linear-gradient(135deg, var(--wood-light) 0%, var(--wood-medium) 100%);
+  background: 
+    linear-gradient(180deg, 
+      var(--wood-highlight) 0%, 
+      var(--wood-light) 20%,
+      var(--wood-medium) 40%,
+      var(--wood-light) 60%,
+      var(--wood-highlight) 80%,
+      var(--wood-light) 100%
+    );
   border-color: 
-    var(--wood-highlight) 
+    #e5d0b8
     var(--wood-medium) 
     var(--wood-medium) 
-    var(--wood-highlight);
+    #e5d0b8;
 }
 
 /* Variation: Dark wooden box */
 .wooden-box-dark {
-  background: linear-gradient(135deg, var(--wood-dark) 0%, var(--wood-border) 100%);
+  background: 
+    linear-gradient(180deg, 
+      var(--wood-dark) 0%, 
+      var(--wood-darker) 20%,
+      var(--wood-border) 40%,
+      var(--wood-darker) 60%,
+      var(--wood-dark) 80%,
+      var(--wood-darker) 100%
+    );
   border-color: 
     var(--wood-medium) 
-    var(--wood-border) 
-    var(--wood-border) 
+    #2a1f15
+    #2a1f15
     var(--wood-medium);
 }
 
