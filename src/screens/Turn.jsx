@@ -4,6 +4,13 @@ export function Turn({ state, dispatch }){
   const c = state.turn.computed;
   const confirmEnabled = c?.canConfirm;
 
+  const resetTurn = () => {
+    if (window.confirm('¿Reiniciar el turno actual? Se borrarán los dados y la carta seleccionados.')) {
+      // Reset only turn data
+      dispatch({ type: 'RESET_TURN' });
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       {/* Action Card Selection */}
@@ -193,14 +200,10 @@ export function Turn({ state, dispatch }){
         {/* Action Buttons */}
         <div className="right" style={{ marginTop: '20px' }}>
           <button 
-            className="btn btn-danger" 
-            onClick={() => {
-              if (window.confirm('¿Seguro que quieres empezar una nueva partida? Se perderá el progreso actual.')) {
-                dispatch({ type: 'RESET_GAME', initialState: state });
-              }
-            }}
+            className="btn btn-ghost" 
+            onClick={resetTurn}
           >
-            🔄 Nueva Partida
+            🔄 Reiniciar Turno
           </button>
           <button 
             className="btn btn-secondary" 
