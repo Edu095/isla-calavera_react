@@ -12,10 +12,10 @@ export function ClothFlag({ onReset, showResetButton }) {
     // Scene setup
     const scene = new THREE.Scene();
     const width = containerRef.current.clientWidth;
-    const height = 180; // Reduced from 250
+    const height = 180;
     
     const camera = new THREE.PerspectiveCamera(60, width / height, 1, 1000);
-    camera.position.set(0, 0, 45); // Moved camera even closer from 55
+    camera.position.set(0, 0, 45);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     const renderer = new THREE.WebGLRenderer({ 
@@ -26,17 +26,17 @@ export function ClothFlag({ onReset, showResetButton }) {
     renderer.setClearColor(0x000000, 0);
     containerRef.current.appendChild(renderer.domElement);
 
-    // Lighting
-    const light = new THREE.DirectionalLight(0xffffff, 1);
+    // Lighting - Increased for better contrast
+    const light = new THREE.DirectionalLight(0xffffff, 1.3); // Increased from 1.0
     light.position.set(10, 50, 100);
     scene.add(light);
 
-    const ambientLight = new THREE.AmbientLight(0x999999);
+    const ambientLight = new THREE.AmbientLight(0xcccccc); // Brighter from 0x999999
     scene.add(ambientLight);
 
-    // Flag geometry - Even larger flag
-    const flagWidth = 85;  // Increased from 70
-    const flagHeight = 42; // Increased from 35
+    // Flag geometry
+    const flagWidth = 85;
+    const flagHeight = 42;
     const segmentsW = 50;
     const segmentsH = 25;
 
@@ -57,7 +57,40 @@ export function ClothFlag({ onReset, showResetButton }) {
           '/flag-title.png',
           (loadedTexture) => {
             console.log('Flag image loaded successfully');
-            resolve(loadedTexture);
+            
+            // Apply contrast enhancement
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = loadedTexture.image;
+            
+            canvas.width = img.width;
+            canvas.height = img.height;
+            
+            // Draw original image
+            ctx.drawImage(img, 0, 0);
+            
+            // Get image data
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            
+            // Apply contrast adjustment
+            const contrast = 1.3; // Contrast factor (1 = normal, >1 = more contrast)
+            const factor = (259 * (contrast * 255 + 255)) / (255 * (259 - contrast * 255));
+            
+            for (let i = 0; i < data.length; i += 4) {
+              // Apply contrast formula to RGB channels
+              data[i] = factor * (data[i] - 128) + 128;     // Red
+              data[i + 1] = factor * (data[i + 1] - 128) + 128; // Green
+              data[i + 2] = factor * (data[i + 2] - 128) + 128; // Blue
+              // Alpha channel (i + 3) stays the same
+            }
+            
+            // Put modified data back
+            ctx.putImageData(imageData, 0, 0);
+            
+            // Create texture from modified canvas
+            const enhancedTexture = new THREE.CanvasTexture(canvas);
+            resolve(enhancedTexture);
           },
           undefined,
           (error) => {
@@ -100,7 +133,9 @@ export function ClothFlag({ onReset, showResetButton }) {
         side: THREE.DoubleSide,
         transparent: true,
         alphaTest: 0.1,
-        opacity: 1
+        opacity: 1,
+        emissive: 0x222222, // Add slight emission for more vibrant colors
+        emissiveIntensity: 0.3
       });
 
       const flag = new THREE.Mesh(geometry, material);
@@ -195,14 +230,14 @@ export function ClothFlag({ onReset, showResetButton }) {
   return (
     <div style={{ 
       position: 'relative',
-      marginBottom: '12px', // Reduced from 16px
+      marginBottom: '12px',
       overflow: 'visible'
     }}>
       <div 
         ref={containerRef}
         style={{
           width: '100%',
-          height: '180px', // Reduced from 250px
+          height: '180px',
           display: 'block'
         }}
       />
