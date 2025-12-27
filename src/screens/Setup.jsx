@@ -283,9 +283,9 @@ export function Setup({ state, dispatch }){
               
               // Opacidad visible para el stack
               let opacity = 1;
-              if (index === 1) opacity = 1; // Segunda carta visible
-              if (index === 2) opacity = 1; // Tercera carta visible
-              if (index > 2) opacity = 0; // Las demás ocultas
+              //if (index === 1) opacity = 1; // Segunda carta visible
+              //if (index === 2) opacity = 1; // Tercera carta visible
+              //if (index > 2) opacity = 0; // Las demás ocultas
               
               // Transformación para la carta superior
               let transform = `scale(${scale}) translateY(${yOffset}px)`;
