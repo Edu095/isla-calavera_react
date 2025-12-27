@@ -17,13 +17,14 @@ export const DICE_TYPES = [
     { key:'diamond', label:'Diamante (+1 diamante al inicio)' },
     { key:'skull1', label:'Calavera (+1 calavera al inicio; no hay bono)' },
     { key:'skull2', label:'Calavera (+2 calaveras al inicio; no hay bono)' },
-    { key:'sorceress', label:'Hechicera (sin efecto en modo “resultado final”)' },
+    { key:'sorceress', label:'Hechicera (sin efecto en modo "resultado final")' },
     { key:'ship2', label:'Barco Pirata (>=2 sables: +300; si no, -300)' },
     { key:'ship3', label:'Barco Pirata (>=3 sables: +500; si no, -500)' },
     { key:'ship4', label:'Barco Pirata (>=4 sables: +1000; si no, -1000)' },
     { key:'chest', label:'Botín (guardar dados; si mueres puntúan los guardados)' },
   ];
   
-  export const SET_POINTS = { 3:100, 4:200, 5:500, 6:1000, 7:2000, 8:4000 };
+  // 9 dice = instant win (only with gold/diamond cards)
+  export const SET_POINTS = { 3:100, 4:200, 5:500, 6:1000, 7:2000, 8:4000, 9:6000 };
   export const TARGET_SCORE = 6000;
   
