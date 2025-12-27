@@ -58,22 +58,79 @@ const TIPS = [
 ];
 
 export function Setup({ state, dispatch }){
-  const [currentTip, setCurrentTip] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [cards, setCards] = useState(TIPS);
+  const [isSwiping, setIsSwiping] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [currentX, setCurrentX] = useState(0);
 
-  const nextTip = () => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    setCurrentTip((prev) => (prev + 1) % TIPS.length);
-    setTimeout(() => setIsAnimating(false), 500);
+  const handleTouchStart = (e) => {
+    setIsSwiping(true);
+    setStartX(e.touches[0].clientX);
+    setCurrentX(e.touches[0].clientX);
   };
 
-  const prevTip = () => {
-    if (isAnimating) return;
-    setIsAnimating(true);
-    setCurrentTip((prev) => (prev - 1 + TIPS.length) % TIPS.length);
-    setTimeout(() => setIsAnimating(false), 500);
+  const handleTouchMove = (e) => {
+    if (!isSwiping) return;
+    setCurrentX(e.touches[0].clientX);
   };
+
+  const handleTouchEnd = () => {
+    if (!isSwiping) return;
+    
+    const deltaX = currentX - startX;
+    const threshold = 80;
+
+    if (Math.abs(deltaX) > threshold) {
+      setTimeout(() => {
+        setCards(prev => {
+          const newCards = [...prev];
+          const topCard = newCards.shift();
+          newCards.push(topCard);
+          return newCards;
+        });
+      }, 300);
+    }
+
+    setIsSwiping(false);
+    setStartX(0);
+    setCurrentX(0);
+  };
+
+  const handleMouseDown = (e) => {
+    setIsSwiping(true);
+    setStartX(e.clientX);
+    setCurrentX(e.clientX);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isSwiping) return;
+    setCurrentX(e.clientX);
+  };
+
+  const handleMouseUp = () => {
+    if (!isSwiping) return;
+    
+    const deltaX = currentX - startX;
+    const threshold = 80;
+
+    if (Math.abs(deltaX) > threshold) {
+      setTimeout(() => {
+        setCards(prev => {
+          const newCards = [...prev];
+          const topCard = newCards.shift();
+          newCards.push(topCard);
+          return newCards;
+        });
+      }, 300);
+    }
+
+    setIsSwiping(false);
+    setStartX(0);
+    setCurrentX(0);
+  };
+
+  const swipeX = isSwiping ? currentX - startX : 0;
+  const swipeRotate = isSwiping ? (swipeX / 20) : 0;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -150,110 +207,115 @@ export function Setup({ state, dispatch }){
         </div>
       </div>
 
-      {/* Tips Carousel with Sliding Animation */}
+      {/* Card Stack - Guía Rápida */}
       <div className="wooden-box wooden-box-dark fade-in" style={{ animationDelay: '0.1s' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h2 style={{ margin: 0, color: 'var(--text-primary)' }}>📚 Guía Rápida</h2>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button className="mini" onClick={prevTip} disabled={isAnimating} style={{ background: 'rgba(255,255,255,0.1)' }}>←</button>
-            <button className="mini" onClick={nextTip} disabled={isAnimating} style={{ background: 'rgba(255,255,255,0.1)' }}>→</button>
-          </div>
-        </div>
-
-        {/* Carousel Container with Overflow Hidden */}
-        <div style={{ 
-          position: 'relative',
-          overflow: 'hidden',
-          borderRadius: 'var(--radius-md)',
-          background: 'linear-gradient(135deg, rgba(91,180,217,0.2) 0%, rgba(165,216,232,0.1) 100%)'
+        <h2 style={{ marginBottom: '16px', color: 'var(--text-primary)', textAlign: 'center' }}>
+          📚 Guía Rápida
+        </h2>
+        <p style={{ 
+          textAlign: 'center', 
+          color: 'var(--text-muted)', 
+          fontSize: '0.9rem', 
+          marginBottom: '24px' 
         }}>
-          {/* Sliding Track */}
-          <div style={{
-            display: 'flex',
-            transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-            transform: `translateX(-${currentTip * 100}%)`
-          }}>
-            {TIPS.map((tip, index) => (
+          Desliza las cartas para ver más →
+        </p>
+
+        <div 
+          className="card-stack-container"
+          style={{
+            position: 'relative',
+            width: '100%',
+            height: '450px',
+            perspective: '700px',
+            userSelect: 'none'
+          }}
+        >
+          <div className="card-stack">
+            {cards.map((tip, index) => (
               <div
-                key={index}
+                key={`${tip.title}-${index}`}
+                className="tip-card"
                 style={{
-                  minWidth: '100%',
-                  padding: '24px',
-                  boxSizing: 'border-box'
+                  '--i': index,
+                  '--swipe-x': index === 0 ? `${swipeX}px` : '0px',
+                  '--swipe-rotate': index === 0 ? `${swipeRotate}deg` : '0deg',
                 }}
+                onMouseDown={index === 0 ? handleMouseDown : undefined}
+                onMouseMove={index === 0 ? handleMouseMove : undefined}
+                onMouseUp={index === 0 ? handleMouseUp : undefined}
+                onMouseLeave={index === 0 ? handleMouseUp : undefined}
+                onTouchStart={index === 0 ? handleTouchStart : undefined}
+                onTouchMove={index === 0 ? handleTouchMove : undefined}
+                onTouchEnd={index === 0 ? handleTouchEnd : undefined}
               >
-                <div style={{ textAlign: 'center', fontSize: '3rem', marginBottom: '12px' }}>
-                  {tip.emoji}
-                </div>
-                <h3 style={{ textAlign: 'center', color: 'var(--text-primary)', marginBottom: '16px' }}>
-                  {tip.title}
-                </h3>
-                <ul style={{ 
-                  listStyle: 'none', 
-                  padding: 0,
-                  color: 'var(--text-primary)',
-                  fontSize: '0.95rem',
-                  lineHeight: '1.8',
-                  minHeight: '160px'
-                }}>
-                  {tip.content.map((item, idx) => (
-                    <li key={idx} style={{ marginBottom: '8px', paddingLeft: '24px', position: 'relative' }}>
-                      <span style={{ position: 'absolute', left: 0 }}>•</span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                
-                {/* Online Play Button */}
-                {tip.hasButton && (
-                  <div style={{ marginTop: '20px', textAlign: 'center' }}>
-                    <a 
-                      href={tip.buttonUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn-primary"
-                      style={{ 
-                        textDecoration: 'none',
-                        display: 'inline-flex',
-                        gap: '8px',
-                        fontSize: '1rem'
-                      }}
-                    >
-                      {tip.buttonText}
-                    </a>
+                <div className="tip-card-content">
+                  <div style={{ textAlign: 'center', fontSize: '3.5rem', marginBottom: '16px' }}>
+                    {tip.emoji}
                   </div>
-                )}
+                  <h3 style={{ 
+                    textAlign: 'center', 
+                    color: 'var(--text-primary)', 
+                    marginBottom: '20px',
+                    fontSize: '1.4rem'
+                  }}>
+                    {tip.title}
+                  </h3>
+                  <ul style={{ 
+                    listStyle: 'none', 
+                    padding: 0,
+                    color: 'var(--text-primary)',
+                    fontSize: '0.95rem',
+                    lineHeight: '1.8'
+                  }}>
+                    {tip.content.map((item, idx) => (
+                      <li key={idx} style={{ 
+                        marginBottom: '10px', 
+                        paddingLeft: '24px', 
+                        position: 'relative' 
+                      }}>
+                        <span style={{ 
+                          position: 'absolute', 
+                          left: 0,
+                          color: 'var(--accent-gold)'
+                        }}>•</span>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                  
+                  {tip.hasButton && (
+                    <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                      <a 
+                        href={tip.buttonUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-primary"
+                        style={{ 
+                          textDecoration: 'none',
+                          display: 'inline-flex',
+                          gap: '8px',
+                          fontSize: '0.95rem'
+                        }}
+                      >
+                        {tip.buttonText}
+                      </a>
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Dots Navigation */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px' }}>
-          {TIPS.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => {
-                if (!isAnimating) {
-                  setIsAnimating(true);
-                  setCurrentTip(idx);
-                  setTimeout(() => setIsAnimating(false), 500);
-                }
-              }}
-              disabled={isAnimating}
-              style={{
-                width: currentTip === idx ? '24px' : '8px',
-                height: '8px',
-                borderRadius: '4px',
-                background: currentTip === idx ? 'var(--accent-blue)' : 'rgba(255,255,255,0.3)',
-                border: 'none',
-                cursor: isAnimating ? 'not-allowed' : 'pointer',
-                transition: 'all 0.3s ease',
-                opacity: isAnimating ? 0.5 : 1
-              }}
-              aria-label={`Tip ${idx + 1}`}
-            />
-          ))}
+        {/* Card Counter */}
+        <div style={{ 
+          marginTop: '16px', 
+          textAlign: 'center', 
+          color: 'var(--text-muted)',
+          fontSize: '0.85rem'
+        }}>
+          Carta {cards.length > 0 ? '1' : '0'} de {TIPS.length}
         </div>
       </div>
 
