@@ -12,10 +12,10 @@ export function ClothFlag({ onReset, showResetButton }) {
     // Scene setup
     const scene = new THREE.Scene();
     const width = containerRef.current.clientWidth;
-    const height = 250; // Reduced from 400 to take less space
+    const height = 180; // Reduced from 250
     
     const camera = new THREE.PerspectiveCamera(60, width / height, 1, 1000);
-    camera.position.set(0, 0, 55); // Moved camera closer for bigger flag
+    camera.position.set(0, 0, 45); // Moved camera even closer from 55
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     const renderer = new THREE.WebGLRenderer({ 
@@ -34,9 +34,9 @@ export function ClothFlag({ onReset, showResetButton }) {
     const ambientLight = new THREE.AmbientLight(0x999999);
     scene.add(ambientLight);
 
-    // Flag geometry - Larger flag
-    const flagWidth = 70;  // Increased from 60
-    const flagHeight = 35; // Increased from 30
+    // Flag geometry - Even larger flag
+    const flagWidth = 85;  // Increased from 70
+    const flagHeight = 42; // Increased from 35
     const segmentsW = 50;
     const segmentsH = 25;
 
@@ -195,14 +195,14 @@ export function ClothFlag({ onReset, showResetButton }) {
   return (
     <div style={{ 
       position: 'relative',
-      marginBottom: '16px', // Reduced from 24px
-      overflow: 'visible' // Allow flag to extend beyond container
+      marginBottom: '12px', // Reduced from 16px
+      overflow: 'visible'
     }}>
       <div 
         ref={containerRef}
         style={{
           width: '100%',
-          height: '250px', // Reduced from 400px
+          height: '180px', // Reduced from 250px
           display: 'block'
         }}
       />
