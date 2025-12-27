@@ -88,10 +88,10 @@ export function ClothFlag({ onReset, showResetButton }) {
 
     // Wave animation parameters
     const waveParams = {
-      horizontal: 0.25,
+      horizontal: 0.4,
       vertical: 0.3,
       swing: 0.25,
-      speed: 0.3
+      speed: 0.4
     };
 
     // Store original vertex positions
