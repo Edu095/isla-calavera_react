@@ -48,7 +48,7 @@ export default function App(){
               </div>
 
               <div className="headerActions">
-                {state.screen !== 'setup' && state.screen !== 'tests' && (
+                {state.screen !== 'setup' && state.screen !== 'tests' && state.screen !== 'names' && (
                   <button
                     className="btn btn-danger"
                     onClick={reset}
