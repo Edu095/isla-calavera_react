@@ -35,8 +35,8 @@ export function ClothFlag({ onReset, showResetButton }) {
     scene.add(ambientLight);
 
     // Flag geometry
-    const flagWidth = 100;
-    const flagHeight = 57;
+    const flagWidth = 95;
+    const flagHeight = 52;
     const segmentsW = 50;
     const segmentsH = 25;
 
