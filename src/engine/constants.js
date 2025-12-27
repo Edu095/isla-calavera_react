@@ -10,7 +10,7 @@ export const DICE_TYPES = [
   export const CHEST_ALLOWED = ['saber', 'monkey', 'parrot', 'gold', 'diamond'];
   
   export const FORTUNE = [
-    { key:'none', label:'Sin carta / Normal' },
+    { key:'none', label:'Selecciona una carta...' },
     { key:'pirate', label:'Pirata (duplica puntos; Isla Calavera -200 por calavera)' },
     { key:'animals', label:'Animales (Monos+Loros combinan juntos)' },
     { key:'gold', label:'Moneda de Oro (+1 moneda al inicio)' },
