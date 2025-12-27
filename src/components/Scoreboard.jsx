@@ -17,6 +17,7 @@ export function Scoreboard({ state }){
   
   const round = state.round ?? state.roundNumber ?? state.turn?.round ?? 1;
   const modeLabel = state.mode === 'hardcore' ? '💀 Hardcore' : '😊 Fácil';
+  const isSuddenDeath = round >= 14;
 
   return (
     <div className="card card-dark fade-in" style={{ marginBottom: '24px' }}>
@@ -39,6 +40,28 @@ export function Scoreboard({ state }){
 
       {!isCollapsed && (
         <>
+          {/* Sudden Death Warning */}
+          {isSuddenDeath && (
+            <div className="notice warning" style={{ 
+              marginBottom: '16px',
+              background: 'linear-gradient(135deg, rgba(217,120,53,0.2) 0%, rgba(217,120,53,0.1) 100%)',
+              border: '2px solid var(--warning-orange)',
+              animation: 'pulse 2s ease-in-out infinite'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ fontSize: '2rem' }}>⚡</div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '1rem', marginBottom: '4px' }}>
+                    ¡MUERTE SÚBITA!
+                  </div>
+                  <div style={{ fontSize: '0.85rem', opacity: 0.9 }}>
+                    Ronda {round}: El primero en alcanzar 6000 puntos gana instantáneamente.
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Info Pills */}
           <div style={{ 
             display: 'flex', 
@@ -46,8 +69,11 @@ export function Scoreboard({ state }){
             flexWrap: 'wrap',
             marginBottom: '16px'
           }}>
-            <span className="pill" style={{ background: 'var(--warning-orange)' }}>
-              Ronda {round}
+            <span className="pill" style={{ 
+              background: isSuddenDeath ? 'var(--danger-red)' : 'var(--warning-orange)',
+              animation: isSuddenDeath ? 'pulse 2s ease-in-out infinite' : 'none'
+            }}>
+              {isSuddenDeath ? '⚡ ' : ''}Ronda {round}
             </span>
             <span className="pill" style={{ background: 'var(--accent-blue)' }}>
               Turno: {active?.name ?? '—'}
