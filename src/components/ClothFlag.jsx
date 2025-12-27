@@ -12,18 +12,18 @@ export function ClothFlag({ onReset, showResetButton }) {
     // Scene setup
     const scene = new THREE.Scene();
     const width = containerRef.current.clientWidth;
-    const height = 400;
+    const height = 250; // Reduced from 400 to take less space
     
     const camera = new THREE.PerspectiveCamera(60, width / height, 1, 1000);
-    camera.position.set(0, 0, 70);
+    camera.position.set(0, 0, 55); // Moved camera closer for bigger flag
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     const renderer = new THREE.WebGLRenderer({ 
       antialias: true, 
-      alpha: true // Enable alpha for transparent background
+      alpha: true
     });
     renderer.setSize(width, height);
-    renderer.setClearColor(0x000000, 0); // Transparent background
+    renderer.setClearColor(0x000000, 0);
     containerRef.current.appendChild(renderer.domElement);
 
     // Lighting
@@ -34,9 +34,9 @@ export function ClothFlag({ onReset, showResetButton }) {
     const ambientLight = new THREE.AmbientLight(0x999999);
     scene.add(ambientLight);
 
-    // Flag geometry
-    const flagWidth = 60;
-    const flagHeight = 30;
+    // Flag geometry - Larger flag
+    const flagWidth = 70;  // Increased from 60
+    const flagHeight = 35; // Increased from 30
     const segmentsW = 50;
     const segmentsH = 25;
 
@@ -68,10 +68,7 @@ export function ClothFlag({ onReset, showResetButton }) {
             canvas.height = 512;
             const ctx = canvas.getContext('2d');
 
-            // Transparent background - don't fill
-            // ctx.fillStyle = '#000000';
-            // ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+            // Transparent background
             // Draw skull
             ctx.font = 'bold 160px serif';
             ctx.textAlign = 'center';
@@ -101,9 +98,9 @@ export function ClothFlag({ onReset, showResetButton }) {
       const material = new THREE.MeshLambertMaterial({
         map: texture,
         side: THREE.DoubleSide,
-        transparent: true,      // Enable transparency
-        alphaTest: 0.1,         // Discard pixels with alpha < 0.1
-        opacity: 1              // Full opacity for non-transparent areas
+        transparent: true,
+        alphaTest: 0.1,
+        opacity: 1
       });
 
       const flag = new THREE.Mesh(geometry, material);
@@ -198,14 +195,14 @@ export function ClothFlag({ onReset, showResetButton }) {
   return (
     <div style={{ 
       position: 'relative',
-      marginBottom: '24px',
-      overflow: 'visible'
+      marginBottom: '16px', // Reduced from 24px
+      overflow: 'visible' // Allow flag to extend beyond container
     }}>
       <div 
         ref={containerRef}
         style={{
           width: '100%',
-          height: '400px',
+          height: '250px', // Reduced from 400px
           display: 'block'
         }}
       />
@@ -215,7 +212,7 @@ export function ClothFlag({ onReset, showResetButton }) {
           onClick={onReset}
           style={{
             position: 'absolute',
-            bottom: '16px',
+            bottom: '8px',
             right: '16px',
             fontSize: '0.85rem',
             padding: '8px 16px',
