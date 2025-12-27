@@ -87,6 +87,128 @@ body {
 }
 
 /* ============================================
+   PIRATE FLAG HEADER
+   ============================================ */
+
+.pirate-flag-header {
+  position: relative;
+  margin-bottom: var(--spacing-xl);
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.flag-pole {
+  width: 12px;
+  height: 180px;
+  background: linear-gradient(180deg, #4a3828 0%, #2d2318 100%);
+  border-radius: 6px;
+  box-shadow: inset -2px 0 4px rgba(0,0,0,0.5), 2px 0 8px rgba(0,0,0,0.3);
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.flag-pole::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 20px;
+  background: var(--accent-gold);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(212,175,55,0.6);
+}
+
+.pirate-flag {
+  position: relative;
+  background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+  padding: var(--spacing-lg) var(--spacing-xl);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  box-shadow: 
+    0 8px 32px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex: 1;
+  animation: wave 3s ease-in-out infinite;
+  transform-origin: left center;
+  border: 3px solid #2a2a2a;
+  border-left: none;
+}
+
+.pirate-flag::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(255,255,255,0.02) 10px,
+      rgba(255,255,255,0.02) 20px
+    );
+  pointer-events: none;
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+}
+
+.flag-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  z-index: 1;
+}
+
+.skull-icon {
+  font-size: 4rem;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.8));
+  animation: skull-float 3s ease-in-out infinite;
+}
+
+.flag-title {
+  font-family: 'Pirata One', cursive;
+  font-size: 3rem;
+  font-weight: 400;
+  margin: 0;
+  background: linear-gradient(135deg, var(--accent-gold) 0%, #ffffff 50%, var(--accent-gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 20px rgba(212,175,55,0.5);
+  letter-spacing: 3px;
+  text-align: center;
+  position: relative;
+}
+
+.flag-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--accent-gold) 50%, transparent 100%);
+}
+
+.flag-reset-btn {
+  z-index: 1;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+}
+
+/* ============================================
    TYPOGRAPHY
    ============================================ */
 
@@ -486,8 +608,16 @@ label {
    ============================================ */
 
 @media (max-width: 768px) {
-  .brandTitle {
+  .flag-title {
     font-size: 2rem;
+  }
+  
+  .skull-icon {
+    font-size: 3rem;
+  }
+  
+  .pirate-flag {
+    padding: var(--spacing-md);
   }
   
   .topbarRow {
@@ -543,6 +673,30 @@ label {
   50% {
     opacity: 0.85;
     transform: scale(1.02);
+  }
+}
+
+@keyframes wave {
+  0%, 100% {
+    transform: rotate(0deg) translateX(0);
+  }
+  25% {
+    transform: rotate(-1deg) translateX(-2px);
+  }
+  50% {
+    transform: rotate(0deg) translateX(0);
+  }
+  75% {
+    transform: rotate(1deg) translateX(2px);
+  }
+}
+
+@keyframes skull-float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(3deg);
   }
 }
 
