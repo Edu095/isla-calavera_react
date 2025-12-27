@@ -3,103 +3,114 @@ import { DICE_TYPES, FORTUNE, CHEST_ALLOWED } from '../engine/constants.js';
 export function Turn({ state, dispatch }){
   const c = state.turn.computed;
   const confirmEnabled = c?.canConfirm;
-  const confirmStyle = confirmEnabled ? 'none' : 'grayscale(1) opacity(.65)';
 
   return (
-    <div className="grid">
-      <div className="card">
-        <h2>🎲 Turno</h2>
-
-        <label>Carta de acción</label>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      {/* Action Card Selection */}
+      <div className="card fade-in">
+        <h2>🃏 Carta de Acción</h2>
+        
         <select 
           value={state.turn.fortune} 
           onChange={(e) => dispatch({ type: 'TURN_SET_FORTUNE', fortune: e.target.value })}
+          style={{ fontSize: '1rem', fontWeight: 600 }}
         >
           {FORTUNE.map(f => (
             <option key={f.key} value={f.key}>{f.label}</option>
           ))}
         </select>
 
-        <div className="divider" />
-
-        <div className={`notice ${c?.bust ? 'bad' : 'good'}`}>
-          <div className="kv">
-            <span>Dados seleccionados</span>
-            <b>{c?.totalDice || 0}/8</b>
+        {/* Visual Card Display */}
+        <div style={{
+          marginTop: '16px',
+          padding: '20px',
+          background: 'linear-gradient(135deg, rgba(91,180,217,0.2) 0%, rgba(165,216,232,0.1) 100%)',
+          borderRadius: 'var(--radius-md)',
+          border: '2px solid var(--accent-blue)',
+          textAlign: 'center'
+        }}>
+          <div style={{ fontSize: '3rem', marginBottom: '8px' }}>🎴</div>
+          <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-dark)' }}>
+            {FORTUNE.find(f => f.key === state.turn.fortune)?.label || 'Sin carta'}
           </div>
-          <div className="kv">
-            <span>Calaveras totales</span>
-            <b>{c?.skullsTotal || 0}</b>
-          </div>
-          <div className="kv">
-            <span>Puntos del turno</span>
-            <b>{Math.trunc(c?.points || 0).toLocaleString('es-ES')}</b>
-          </div>
-          {c?.canSkullIsland && (
-            <div className="small" style={{ marginTop: 6 }}>
-              <b>Isla Calavera</b> disponible (4+ calaveras).
-            </div>
-          )}
-          {c?.earlyDeath && (
-            <div className="small" style={{ marginTop: 6 }}>
-              <b>Muerte</b>: puedes confirmar ya (esta carta no requiere 8 dados).
-            </div>
-          )}
-          {state.turn.fortune === 'chest' && (state.turn.dice.skull || 0) >= 3 && !c?.canSkullIsland && (
-            <div className="small" style={{ marginTop: 6 }}>
-              <b>Muerte</b>: con Botín debes completar 8 dados (salvo Isla Calavera).
-            </div>
-          )}
-        </div>
-
-        <div style={{ marginTop: 12 }} className="right">
-          <button 
-            className="btn btn-ghost" 
-            onClick={() => dispatch({ type: 'RESET_GAME', initialState: state })}
-          >
-            Nueva partida
-          </button>
-          <button 
-            className="btn btn-secondary" 
-            onClick={() => dispatch({ type: 'CONFIRM_TURN' })}
-            disabled={!confirmEnabled}
-            style={{ filter: confirmStyle }}
-          >
-            Confirmar
-          </button>
-        </div>
-
-        <div className="divider" />
-        <div className="small muted">
-          {c?.notes?.length ? c.notes.map(n => `• ${n}`).join('; ') : 'Selecciona carta y reparte los dados.'}
         </div>
       </div>
 
-      <div className="card">
-        <h2>🧮 Dados (hasta 8)</h2>
-        <div className="small muted">
-          Sin Botín: al sacar 3 calaveras puedes confirmar sin llegar a 8 (muerte inmediata).
+      {/* Dice Selection */}
+      <div className="card slide-in" style={{ animationDelay: '0.1s' }}>
+        <h2>🎲 Selecciona los Dados (máx. 8)</h2>
+        <div className="small muted" style={{ marginBottom: '16px' }}>
+          Ajusta la cantidad de cada tipo de dado que has obtenido en tu tirada.
         </div>
-        <div className="divider" />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {DICE_TYPES.map(t => {
             const val = state.turn.dice[t.key] || 0;
+            const isSkull = t.key === 'skull';
+            const borderColor = isSkull ? 'var(--danger-red)' : 'rgba(255,255,255,0.1)';
+
             return (
-              <div key={t.key} className="counter">
-                <div>
-                  <div className="name">{t.emoji} {t.label}</div>
-                  <div className="sub">Seleccionados: {val}</div>
+              <div 
+                key={t.key} 
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '16px',
+                  background: val > 0 
+                    ? 'linear-gradient(90deg, rgba(91,180,217,0.2) 0%, rgba(91,180,217,0.05) 100%)'
+                    : 'rgba(255,255,255,0.05)',
+                  borderRadius: 'var(--radius-md)',
+                  border: `2px solid ${borderColor}`,
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{
+                    fontSize: '2rem',
+                    width: '48px',
+                    height: '48px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'rgba(255,255,255,0.1)',
+                    borderRadius: 'var(--radius-sm)'
+                  }}>
+                    {t.emoji}
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: '1.1rem', color: 'var(--text-dark)' }}>
+                      {t.label}
+                    </div>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                      {isSkull ? '¡Cuidado! No puntúa' : '100 pts cada uno'}
+                    </div>
+                  </div>
                 </div>
-                <div className="ctl">
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <button 
                     className="mini" 
                     onClick={() => dispatch({ type: 'TURN_ADJUST_DIE', key: t.key, delta: -1 })}
-                  >−</button>
-                  <div className="num">{val}</div>
+                    style={{ background: val === 0 ? 'rgba(255,255,255,0.1)' : 'var(--accent-blue)' }}
+                  >
+                    −
+                  </button>
+                  <div style={{
+                    fontSize: '1.8rem',
+                    fontWeight: 700,
+                    minWidth: '48px',
+                    textAlign: 'center',
+                    color: 'var(--text-dark)'
+                  }}>
+                    {val}
+                  </div>
                   <button 
                     className="mini" 
                     onClick={() => dispatch({ type: 'TURN_ADJUST_DIE', key: t.key, delta: +1 })}
-                  >+</button>
+                  >
+                    +
+                  </button>
                 </div>
               </div>
             );
@@ -107,6 +118,105 @@ export function Turn({ state, dispatch }){
         </div>
       </div>
 
+      {/* Score Summary */}
+      <div className={`card slide-in ${c?.bust ? 'card-transparent' : ''}`} 
+           style={{ 
+             animationDelay: '0.2s',
+             background: c?.bust 
+               ? 'linear-gradient(135deg, rgba(231,76,60,0.3) 0%, rgba(231,76,60,0.1) 100%)'
+               : 'linear-gradient(135deg, rgba(39,174,96,0.3) 0%, rgba(39,174,96,0.1) 100%)',
+             border: `2px solid ${c?.bust ? 'var(--danger-red)' : 'var(--success-green)'}`
+           }}>
+        <h2 style={{ color: 'var(--text-primary)' }}>
+          {c?.bust ? '☠️ MUERTE' : '💰 Puntos del Turno'}
+        </h2>
+
+        <div style={{
+          textAlign: 'center',
+          padding: '24px',
+          background: 'rgba(255,255,255,0.1)',
+          borderRadius: 'var(--radius-md)',
+          marginBottom: '16px'
+        }}>
+          <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '8px' }}>
+            Total de puntos
+          </div>
+          <div style={{
+            fontSize: '3rem',
+            fontWeight: 700,
+            color: c?.bust ? 'var(--danger-red)' : 'var(--success-green)'
+          }}>
+            {c?.bust ? '0' : `+${Math.trunc(c?.points || 0).toLocaleString('es-ES')}`}
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <div className="kv" style={{ color: 'var(--text-primary)' }}>
+            <span>Dados seleccionados</span>
+            <b>{c?.totalDice || 0}/8</b>
+          </div>
+          <div className="kv" style={{ color: 'var(--text-primary)' }}>
+            <span>Calaveras totales</span>
+            <b style={{ color: (c?.skullsTotal || 0) >= 3 ? 'var(--danger-red)' : 'inherit' }}>
+              {c?.skullsTotal || 0}
+            </b>
+          </div>
+        </div>
+
+        {c?.canSkullIsland && (
+          <div className="notice warning" style={{ marginTop: '16px' }}>
+            <b>💀 ISLA CALAVERA disponible</b>
+            <div className="small" style={{ marginTop: '4px' }}>
+              Has sacado 4+ calaveras. Puedes activar el modo especial.
+            </div>
+          </div>
+        )}
+
+        {c?.earlyDeath && (
+          <div className="notice bad" style={{ marginTop: '16px' }}>
+            <b>☠️ Muerte anticipada</b>
+            <div className="small" style={{ marginTop: '4px' }}>
+              Con 3 calaveras puedes confirmar sin completar 8 dados.
+            </div>
+          </div>
+        )}
+
+        {c?.notes?.length > 0 && (
+          <div style={{ marginTop: '16px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+            {c.notes.map((n, i) => (
+              <div key={i} style={{ marginTop: '4px' }}>• {n}</div>
+            ))}
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="right" style={{ marginTop: '20px' }}>
+          <button 
+            className="btn btn-danger" 
+            onClick={() => {
+              if (window.confirm('¿Seguro que quieres empezar una nueva partida? Se perderá el progreso actual.')) {
+                dispatch({ type: 'RESET_GAME', initialState: state });
+              }
+            }}
+          >
+            🔄 Nueva Partida
+          </button>
+          <button 
+            className="btn btn-secondary" 
+            onClick={() => dispatch({ type: 'CONFIRM_TURN' })}
+            disabled={!confirmEnabled}
+            style={{ 
+              filter: confirmEnabled ? 'none' : 'grayscale(1) opacity(0.5)',
+              fontSize: '1.1rem'
+            }}
+          >
+            ✅ Confirmar Turno
+          </button>
+        </div>
+      </div>
+
+      {/* Chest UI (only for Botín card) */}
       {state.turn.fortune === 'chest' && <ChestUI state={state} dispatch={dispatch} />}
     </div>
   );
@@ -118,60 +228,88 @@ function ChestUI({ state, dispatch }){
   const totalChest = CHEST_ALLOWED.reduce((a,k) => a + (chest[k] || 0), 0);
 
   return (
-    <div className="card" style={{ background: 'rgba(0,0,0,.22)' }}>
-      <h2>📦 Botín</h2>
-      <div className="small muted">
-        Marca qué dados estaban guardados <b>antes</b> de sacar la 3ª calavera. Si mueres, sólo puntúan esos dados.
-      </div>
-      <div className="divider" />
-
-      <div className="right">
-        <button className="btn btn-ghost" onClick={() => dispatch({ type: 'CHEST_AUTO' })}>
-          Auto-guardar (ayuda)
-        </button>
-        <button className="btn btn-ghost" onClick={() => dispatch({ type: 'CHEST_CLEAR' })}>
-          Vaciar Botín
-        </button>
+    <div className="card card-dark slide-in" style={{ animationDelay: '0.3s' }}>
+      <h2 style={{ color: 'var(--text-primary)' }}>📦 Cofre del Botín</h2>
+      <div className="small" style={{ color: 'var(--text-muted)', marginBottom: '16px' }}>
+        Marca qué dados estaban <b>guardados antes</b> de sacar la 3ª calavera. 
+        Si mueres, sólo estos dados puntúan.
       </div>
 
-      <div className="divider" />
-      <div className="notice">
+      <div className="notice warning" style={{ marginBottom: '16px' }}>
         <div className="kv">
-          <span>Dados en Botín</span>
+          <span>Dados en el Botín</span>
           <b>{totalChest}/8</b>
         </div>
-        <div className="small muted">En Botín no se pueden guardar calaveras.</div>
+        <div className="small" style={{ marginTop: '8px' }}>
+          ⚠️ No se pueden guardar calaveras en el Botín.
+        </div>
       </div>
 
-      <div className="divider" />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <div className="right" style={{ marginBottom: '16px' }}>
+        <button 
+          className="btn btn-ghost" 
+          onClick={() => dispatch({ type: 'CHEST_CLEAR' })}
+        >
+          🗑️ Vaciar Botín
+        </button>
+        <button 
+          className="btn btn-primary" 
+          onClick={() => dispatch({ type: 'CHEST_AUTO' })}
+        >
+          🤖 Auto-guardar (ayuda)
+        </button>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {CHEST_ALLOWED.map(k => {
           const t = DICE_TYPES.find(x => x.key === k);
           const max = dice[k] || 0;
           const val = chest[k] || 0;
 
           return (
-            <div key={k} className="checkrow">
-              <div>
-                <div style={{ fontWeight: 900 }}>
-                  {t.emoji} {t.label} <span className="tag">(han salido: {max})</span>
+            <div 
+              key={k}
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '12px 16px',
+                background: val > 0 
+                  ? 'rgba(243,156,18,0.2)'
+                  : 'rgba(255,255,255,0.05)',
+                borderRadius: 'var(--radius-md)',
+                opacity: max === 0 ? 0.5 : 1
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ fontSize: '1.5rem' }}>{t.emoji}</div>
+                <div>
+                  <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+                    {t.label}
+                  </div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                    Disponibles: {max} | En Botín: <b>{val}</b>
+                  </div>
                 </div>
-                <div className="tag">En Botín: <b>{val}</b></div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <input 
-                  type="text" 
-                  inputMode="numeric" 
-                  pattern="[0-9]*" 
-                  value={val}
-                  onChange={(e) => {
-                    e.target.value = e.target.value.replace(/[^\d]/g, '');
-                    dispatch({ type: 'CHEST_SET_COUNT', key: k, value: e.target.value });
-                  }}
-                  style={{ width: 72, textAlign: 'center' }}
-                  disabled={max === 0}
-                />
-              </div>
+
+              <input 
+                type="number" 
+                min="0"
+                max={max}
+                value={val}
+                onChange={(e) => {
+                  const value = Math.min(Math.max(0, parseInt(e.target.value) || 0), max);
+                  dispatch({ type: 'CHEST_SET_COUNT', key: k, value: value });
+                }}
+                disabled={max === 0}
+                style={{ 
+                  width: '80px', 
+                  textAlign: 'center',
+                  fontWeight: 700,
+                  fontSize: '1.2rem'
+                }}
+              />
             </div>
           );
         })}
