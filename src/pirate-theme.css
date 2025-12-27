@@ -1078,80 +1078,120 @@ label {
 
 
 /* ============================================
-   CARD STACK - GUÍA RÁPIDA
+   CARD STACK - GUÍA RÁPIDA - IMPROVED
+   Inspired by CodePen card stack effects
    ============================================ */
 
-.card-stack-container {
-  --card-perspective: 700px;
-  --card-z-offset: 12px;
-  --card-y-offset: 7px;
-  --card-max-z-index: 100;
-  --card-swap-duration: 0.3s;
+.card-stack-wrapper {
+  /* 3D perspective for depth effect */
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
 }
 
 .card-stack {
   position: relative;
   width: 100%;
   height: 100%;
+  transform-style: preserve-3d;
 }
 
 .tip-card {
+  /* Absolute positioning for stacking */
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  cursor: grab;
-  touch-action: none;
-  transition: 
-    transform var(--card-swap-duration) cubic-bezier(0.4, 0, 0.2, 1),
-    opacity var(--card-swap-duration) ease-out,
-    z-index var(--card-swap-duration) step-end;
   
-  /* Posicionamiento en stack */
-  transform: 
-    translateY(calc(var(--i) * var(--card-y-offset)))
-    translateZ(calc(var(--i) * var(--card-z-offset) * -1))
-    translateX(var(--swipe-x))
-    rotateZ(var(--swipe-rotate));
-  
-  z-index: calc(var(--card-max-z-index) - var(--i));
+  /* 3D transforms */
   transform-style: preserve-3d;
-  pointer-events: auto;
-}
-
-.tip-card:first-child {
+  backface-visibility: hidden;
+  
+  /* Smooth transitions */
+  transition: 
+    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.3s ease,
+    z-index 0.4s step-end;
+  
+  /* Interactive cursor */
   cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.tip-card:first-child:active {
+.tip-card.active {
+  /* Active card has highest z-index */
+  z-index: 100 !important;
+}
+
+.tip-card:active {
   cursor: grabbing;
-}
-
-/* Desactivar interacción en cartas que no están arriba */
-.tip-card:not(:first-child) {
-  pointer-events: none;
 }
 
 .tip-card-content {
   width: 100%;
   height: 100%;
+  
+  /* Wooden texture background */
   background-image: url('/textures/wooden-box.jpg');
   background-size: cover;
   background-position: center;
-  border-radius: var(--radius-md);
+  
+  /* Rounded corners */
+  border-radius: var(--radius-lg);
+  
+  /* Padding for content */
   padding: var(--spacing-xl);
+  
+  /* Golden border for pirate aesthetic */
+  border: 3px solid rgba(212, 175, 55, 0.4);
+  
+  /* Enhanced shadows for depth */
   box-shadow: 
-    0 20px 60px rgba(0,0,0,0.8),
-    inset 0 2px 0 rgba(255,255,255,0.1),
-    inset 0 -2px 0 rgba(0,0,0,0.6);
-  border: 3px solid rgba(212,175,55,0.4);
-  position: relative;
-  overflow-y: auto;
+    0 30px 70px rgba(0, 0, 0, 0.85),
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.6);
+  
+  /* Content layout */
   display: flex;
   flex-direction: column;
   justify-content: center;
+  
+  /* Overflow for scrollable content */
+  overflow-y: auto;
+  overflow-x: hidden;
+  
+  /* Preserve 3D for child elements */
+  transform-style: preserve-3d;
+  
+  /* Smooth scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 215, 0, 0.5) transparent;
 }
 
-/* Overlay oscuro para legibilidad */
+/* Webkit scrollbar styling */
+.tip-card-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tip-card-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.tip-card-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 215, 0, 0.5);
+  border-radius: 3px;
+}
+
+.tip-card-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 215, 0, 0.7);
+}
+
+/* Dark overlay for better text readability */
 .tip-card-content::before {
   content: '';
   position: absolute;
@@ -1159,45 +1199,82 @@ label {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 100%);
-  border-radius: var(--radius-md);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.35) 0%,
+    rgba(0, 0, 0, 0.55) 100%
+  );
+  border-radius: var(--radius-lg);
   pointer-events: none;
   z-index: 1;
 }
 
-/* Contenido sobre overlay */
+/* Wood grain texture overlay */
+.tip-card-content::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(88deg, transparent 25%, rgba(0, 0, 0, 0.1) 25.1%, transparent 25.3%),
+    linear-gradient(92deg, transparent 60%, rgba(255, 255, 255, 0.04) 60.1%, transparent 60.3%);
+  border-radius: var(--radius-lg);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Content positioned above overlays */
 .tip-card-content > * {
   position: relative;
   z-index: 2;
 }
 
-/* Animación de desvanecimiento para cartas posteriores */
-.tip-card:nth-child(n+4) {
-  opacity: 0;
-}
-
-.tip-card:nth-child(3) {
-  opacity: 0.3;
-}
-
-.tip-card:nth-child(2) {
-  opacity: 0.6;
-}
-
-/* Efecto de brillo en carta activa */
-.tip-card:first-child .tip-card-content {
-  border-color: rgba(255,215,0,0.6);
+/* Active card (top card) gets golden glow */
+.tip-card.active .tip-card-content {
+  border-color: rgba(255, 215, 0, 0.7);
   box-shadow: 
-    0 25px 70px rgba(0,0,0,0.9),
-    0 0 30px rgba(255,215,0,0.2),
-    inset 0 2px 0 rgba(255,255,255,0.15),
-    inset 0 -2px 0 rgba(0,0,0,0.6);
+    0 35px 80px rgba(0, 0, 0, 0.95),
+    0 15px 40px rgba(0, 0, 0, 0.6),
+    0 0 40px rgba(255, 215, 0, 0.25),
+    inset 0 2px 4px rgba(255, 255, 255, 0.15),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.6);
 }
 
-/* Responsive */
+/* Wiggle animation for top card to indicate interactivity */
+@keyframes card-wiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-1deg);
+  }
+  75% {
+    transform: rotate(1deg);
+  }
+}
+
+.tip-card.active:not(:active) {
+  animation: card-wiggle 2s ease-in-out infinite;
+}
+
+/* Hover effect for top card */
+.tip-card.active:hover .tip-card-content {
+  border-color: rgba(255, 215, 0, 0.9);
+  box-shadow: 
+    0 40px 90px rgba(0, 0, 0, 1),
+    0 20px 50px rgba(0, 0, 0, 0.7),
+    0 0 50px rgba(255, 215, 0, 0.35),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.6);
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
-  .card-stack-container {
+  .card-stack-wrapper {
     height: 500px;
+    perspective: 900px;
   }
   
   .tip-card-content {
@@ -1208,20 +1285,40 @@ label {
   .tip-card-content h3 {
     font-size: 1.2rem;
   }
-}
-
-/* Animación suave al reorganizar */
-@keyframes card-shuffle {
-  0% {
-    opacity: 0;
-    transform: scale(0.8) translateY(-50px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
+  
+  .tip-card-content ul {
+    font-size: 0.85rem;
   }
 }
 
-.tip-card {
-  animation: card-shuffle 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+@media (max-width: 480px) {
+  .card-stack-wrapper {
+    height: 550px;
+    perspective: 800px;
+  }
+  
+  .tip-card-content {
+    padding: var(--spacing-md);
+  }
+}
+
+/* Performance optimization - GPU acceleration */
+.tip-card,
+.tip-card-content {
+  will-change: transform;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+/* Disable selection on cards during interaction */
+.tip-card * {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Allow selection on button text */
+.tip-card .btn * {
+  user-select: auto;
+  -webkit-user-select: auto;
 }
