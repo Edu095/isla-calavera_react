@@ -1,0 +1,75 @@
+/* Pirate theme: override variables consumed by styles.css */
+:root{
+    /* Océano / noche */
+    --bg1: #05070c;
+    --bg2: #071426;
+    --bg3: #0b2136;
+  
+    /* Superficies */
+    --card: rgba(9, 19, 29, .62);
+    --b: rgba(245, 197, 66, .18);
+  
+    /* Acentos */
+    --gold: #f5c542;    /* oro moneda */
+    --orange: #ff7a45;  /* cobre / ron */
+    --good: #2dd4bf;    /* teal (positivo) */
+    --bad: #fb7185;     /* rojo coral (peligro) */
+  
+    /* Texto */
+    --txt: #eef4ff;
+    --muted: rgba(238,244,255,.70);
+  }
+  
+  /* Textura tipo “mapa náutico” sin imágenes */
+  body{ position: relative; }
+  
+  body::before{
+    content:"";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+  
+    background:
+      radial-gradient(1200px 600px at 15% 10%, rgba(245,197,66,.12), transparent 60%),
+      radial-gradient(900px 600px at 85% 15%, rgba(34,211,238,.10), transparent 55%),
+      radial-gradient(700px 500px at 50% 90%, rgba(148,163,184,.08), transparent 60%),
+      repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0 1px, transparent 1px 32px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.02) 0 1px, transparent 1px 32px);
+  
+    mix-blend-mode: overlay;
+    opacity: .55;
+  }
+  
+  /* Detalle temático rápido: “marca” en títulos de card */
+  .card h2{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: .2px;
+  }
+  .card h2::before{
+    content: "☠";
+    color: var(--gold);
+    filter: drop-shadow(0 8px 18px rgba(0,0,0,.45));
+  }
+  
+  /* Botones más modernos */
+  .btn:hover{
+    transform: translateY(-1px);
+    filter: brightness(1.03);
+  }
+  .btn:focus-visible{
+    box-shadow:
+      0 0 0 3px rgba(245,197,66,.22),
+      0 8px 22px rgba(0,0,0,.28);
+  }
+  
+  /* Inputs un poco más “premium” */
+  input, select{
+    background: rgba(0,0,0,.42);
+  }
+  
+  /* Avisos (Turn usa 'notice' + 'good/bad') */
+  .notice.good{ border-color: rgba(45,212,191,.35); }
+  .notice.bad{ border-color: rgba(251,113,133,.35); }
+  

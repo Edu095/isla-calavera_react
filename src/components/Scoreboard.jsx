@@ -1,25 +1,30 @@
 export function Scoreboard({ state }){
     const active = state.players[state.currentPlayerIndex];
-    const sorted = [...state.players].sort((a,b) => b.score - a.score);
+    const sorted = [...state.players].sort((a, b) => b.score - a.score);
+  
+    const round = state.round ?? state.roundNumber ?? state.turn?.round ?? 1;
+    const modeLabel = state.mode === 'hardcore' ? 'Hardcore' : 'Normal';
   
     return (
-      <div className="card">
-        <h2>📊 Marcador</h2>
-        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-          <div className="pill">Ronda <b>{state.round}</b></div>
-          <div className="pill">Turno de <b>{active?.name}</b></div>
-          <div className="pill">
-            <small>Modo</small> {state.mode === 'hardcore' ? 'Hardcore' : 'Normal'}
-          </div>
+      <div className="card scoreboard">
+        <h2>Marcador</h2>
+  
+        <div className="row" style={{ gap: 10, flexWrap: 'wrap' }}>
+          <span className="pill">Ronda <b>{round}</b></span>
+          <span className="pill">Turno de <b>{active?.name ?? '—'}</b></span>
+          <span className="pill">Modo <b>{modeLabel}</b></span>
         </div>
+  
         <div className="divider" />
-        <div className="grid" style={{ gridTemplateColumns: '1fr' }}>
-          {sorted.map(p => (
-            <div key={p.id} className="card" style={{ background: 'rgba(0,0,0,.22)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center' }}>
-                <div style={{ fontWeight: 900, color: 'var(--gold)' }}>{p.name}</div>
-                <div className="score">{p.score.toLocaleString('es-ES')}</div>
-              </div>
+  
+        <div className="scoreList">
+          {sorted.map((p) => (
+            <div
+              key={p.id}
+              className={`scoreRow ${p.id === active?.id ? 'isActive' : ''}`}
+            >
+              <div className="scoreName">{p.name}</div>
+              <div className="scoreValue">{Math.trunc(p.score).toLocaleString('es-ES')}</div>
             </div>
           ))}
         </div>
