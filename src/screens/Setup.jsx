@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FORTUNE } from '../engine/constants.js';
 
 const TIPS = [
@@ -65,6 +65,23 @@ export function Setup({ state, dispatch }){
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [isAnimating, setIsAnimating] = useState(false);
 
+  // Bloquear scroll del body cuando se está arrastrando
+  useEffect(() => {
+    if (isDragging) {
+      // Prevenir scroll en móviles y desktop
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    }
+    
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.touchAction = '';
+    };
+  }, [isDragging]);
+
   const handleStart = (clientX, clientY, e) => {
     // Prevenir si es un botón o enlace
     if (e.target.closest('.btn') || e.target.closest('a')) return;
@@ -86,12 +103,21 @@ export function Setup({ state, dispatch }){
   const handleEnd = () => {
     if (!isDragging || isAnimating) return;
     
-    const threshold = 80;
+    const threshold = 100;
     const absX = Math.abs(offset.x);
 
     if (absX > threshold) {
       // Activar animación de salida
       setIsAnimating(true);
+      
+      // Dirección del swipe
+      const direction = offset.x > 0 ? 1 : -1;
+      
+      // Animar hacia fuera
+      setOffset({ 
+        x: direction * window.innerWidth, 
+        y: offset.y 
+      });
       
       // Mover carta al final después de la animación
       setTimeout(() => {
@@ -106,7 +132,7 @@ export function Setup({ state, dispatch }){
         setIsAnimating(false);
       }, 300);
     } else {
-      // Volver a la posición original
+      // Volver a la posición original con animación
       setOffset({ x: 0, y: 0 });
     }
     
@@ -240,7 +266,7 @@ export function Setup({ state, dispatch }){
             perspective: '1200px',
             userSelect: 'none',
             WebkitUserSelect: 'none',
-            touchAction: 'pan-y'
+            touchAction: isDragging ? 'none' : 'pan-y'
           }}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -251,27 +277,28 @@ export function Setup({ state, dispatch }){
               const isTopCard = index === 0;
               const zIndex = cards.length - index;
               
-              // Escalado y posicionamiento para efecto de stack
-              const scale = 1 - (index * 0.05);
-              const yOffset = index * 8;
-              const blur = index > 0 ? index * 2 : 0;
+              // Escalado para efecto de stack
+              const scale = 1 - (index * 0.03);
+              const yOffset = index * 12;
               
-              // Opacidad para cartas traseras
+              // Sin blur, solo opacidad
               let opacity = 1;
-              if (index === 1) opacity = 0.7;
-              if (index === 2) opacity = 0.5;
-              if (index > 2) opacity = 0;
+              if (index > 0) opacity = 0; // Solo visible la carta superior
               
               // Transformación para la carta superior
               let transform = `scale(${scale}) translateY(${yOffset}px)`;
+              let transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
               
               if (isTopCard) {
-                if (isDragging && !isAnimating) {
-                  const rotation = (offset.x / 20);
-                  transform = `translateX(${offset.x}px) translateY(${offset.y * 0.1}px) rotate(${rotation}deg) scale(${scale})`;
+                if (isDragging) {
+                  const rotation = offset.x / 30;
+                  const rotateY = offset.x / 100;
+                  transform = `translateX(${offset.x}px) translateY(${offset.y * 0.2}px) rotate(${rotation}deg) rotateY(${rotateY}deg)`;
+                  transition = 'none';
                 } else if (isAnimating) {
                   const direction = offset.x > 0 ? 1 : -1;
-                  transform = `translateX(${direction * 500}px) rotate(${direction * 30}deg) scale(0.8)`;
+                  transform = `translateX(${offset.x}px) translateY(${offset.y * 0.2}px) rotate(${direction * 25}deg) scale(0.9)`;
+                  transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
                 }
               }
 
@@ -288,10 +315,7 @@ export function Setup({ state, dispatch }){
                     zIndex: zIndex,
                     transform: transform,
                     opacity: opacity,
-                    filter: `blur(${blur}px)`,
-                    transition: (isDragging && isTopCard) || isAnimating
-                      ? 'none' 
-                      : 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                    transition: transition,
                     cursor: isTopCard ? (isDragging ? 'grabbing' : 'grab') : 'default',
                     pointerEvents: isTopCard ? 'auto' : 'none',
                     transformStyle: 'preserve-3d'
