@@ -10,7 +10,7 @@ export function Names({ state, dispatch }){
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       {/* Header Card */}
-      <div className="card card-dark fade-in">
+      <div className="wooden-box wooden-box-dark fade-in">
         <h2 style={{ color: 'var(--text-primary)', marginBottom: '8px' }}>🏴‍☠️ Tripulación</h2>
         <div className="small" style={{ color: 'var(--text-muted)' }}>
           Nombra a los piratas de tu tripulación. El jugador inicial será aleatorio.
@@ -22,10 +22,11 @@ export function Names({ state, dispatch }){
         {state.players.map((p, i) => (
           <div 
             key={p.id} 
-            className="card"
+            className="wooden-box"
             style={{
               background: `linear-gradient(135deg, ${PIRATE_COLORS[i]} 0%, ${PIRATE_COLORS[i]}dd 100%)`,
-              animationDelay: `${0.1 + i * 0.1}s`
+              animationDelay: `${0.1 + i * 0.1}s`,
+              borderColor: `${PIRATE_COLORS[i]}aa ${PIRATE_COLORS[i]}44 ${PIRATE_COLORS[i]}44 ${PIRATE_COLORS[i]}aa`
             }}
           >
             {/* Avatar */}
@@ -94,7 +95,7 @@ export function Names({ state, dispatch }){
       </div>
 
       {/* Action Buttons */}
-      <div className="card card-dark fade-in" style={{ animationDelay: '0.4s' }}>
+      <div className="wooden-box wooden-box-dark fade-in" style={{ animationDelay: '0.4s' }}>
         <div className="right">
           <button 
             className="btn btn-ghost" 
