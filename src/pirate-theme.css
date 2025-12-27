@@ -12,15 +12,15 @@
   --card-light: #5a3d2b;        /* Marrón claro para cards */
   --card-dark: #261409;         /* Marrón muy oscuro */
   --accent-blue: #4a7c8f;       /* Azul mar apagado */
-  --text-primary: #f5e6d3;      /* Crema/pergamino claro */
-  --text-dark: #ffd89b;         /* Dorado suave */
-  --text-muted: #a08060;        /* Marrón claro apagado */
+  --text-primary: #ffffff;      /* Blanco puro para mejor contraste */
+  --text-dark: #ffebb3;         /* Dorado muy claro/crema */
+  --text-muted: #d4c4a8;        /* Beige claro para texto secundario */
   --danger-red: #8b2e16;        /* Rojo calavera oscuro */
   --success-green: #6a994e;     /* Verde tesoro */
   --warning-orange: #d97835;    /* Naranja oxidado */
   
   /* New pirate colors */
-  --accent-gold: #d4af37;       /* Oro pirata */
+  --accent-gold: #ffd700;       /* Oro brillante */
   --accent-red: #c73e1d;        /* Rojo óxido */
   --border-color: #5a3d2b;      /* Marrón borde */
   --shadow-color: rgba(0,0,0,0.6);
@@ -91,6 +91,8 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Add text shadow for better readability on colorful background */
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
 .appFrame {
@@ -219,11 +221,11 @@ body {
   margin: 0;
   /* Add padding to prevent text cutoff */
   padding: var(--spacing-xs) var(--spacing-md);
-  background: linear-gradient(135deg, var(--accent-gold) 0%, #ffffff 50%, var(--accent-gold) 100%);
+  background: linear-gradient(135deg, #ffd700 0%, #ffffff 50%, #ffd700 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  filter: drop-shadow(0 2px 20px rgba(212,175,55,0.6));
+  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.8));
   letter-spacing: 4px;
   text-align: center;
   position: relative;
@@ -241,8 +243,8 @@ body {
   transform: translateX(-50%);
   width: 70%;
   height: 3px;
-  background: linear-gradient(90deg, transparent 0%, var(--accent-gold) 50%, transparent 100%);
-  box-shadow: 0 0 8px var(--accent-gold);
+  background: linear-gradient(90deg, transparent 0%, #ffd700 50%, transparent 100%);
+  box-shadow: 0 0 12px #ffd700;
 }
 
 .flag-reset-btn {
@@ -261,11 +263,10 @@ body {
   font-size: 3rem;
   font-weight: 400;
   margin: 0;
-  background: linear-gradient(135deg, var(--accent-gold) 0%, var(--text-dark) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: 0 2px 10px rgba(212,175,55,0.3);
+  color: #ffffff;
+  text-shadow: 
+    0 2px 4px rgba(0,0,0,0.5),
+    0 0 20px rgba(255,215,0,0.3);
   letter-spacing: 2px;
 }
 
@@ -274,20 +275,23 @@ body {
   color: var(--text-muted);
   font-weight: 400;
   margin-top: var(--spacing-xs);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.4);
 }
 
 h2 {
   font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: var(--spacing-md);
-  color: var(--text-dark);
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.4);
 }
 
 h3 {
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: var(--spacing-sm);
-  color: var(--text-dark);
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.4);
 }
 
 .small {
@@ -599,6 +603,7 @@ h3 {
   align-items: center;
   gap: var(--spacing-sm);
   text-decoration: none;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 .btn:hover {
@@ -621,18 +626,19 @@ h3 {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent-gold) 0%, #b8941f 100%);
-  color: var(--bg-primary);
-  border: 2px solid #ffd700;
+  background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+  color: #1a0f0a;
+  border: 2px solid #ffed4e;
+  font-weight: 600;
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #ffd700 0%, var(--accent-gold) 100%);
+  background: linear-gradient(135deg, #ffe44d 0%, #ffd700 100%);
 }
 
 .btn-secondary {
   background: linear-gradient(135deg, var(--accent-red) 0%, #a32f1a 100%);
-  color: var(--text-primary);
+  color: #ffffff;
   border: 2px solid var(--accent-red);
 }
 
@@ -641,21 +647,22 @@ h3 {
 }
 
 .btn-ghost {
-  background: transparent;
-  color: var(--text-dark);
-  border: 2px solid var(--border-color);
+  background: rgba(0,0,0,0.3);
+  color: #ffffff;
+  border: 2px solid rgba(255,255,255,0.3);
   box-shadow: none;
+  backdrop-filter: blur(5px);
 }
 
 .btn-ghost:hover {
-  background: rgba(212,175,55,0.15);
-  color: var(--text-primary);
-  border-color: var(--accent-gold);
+  background: rgba(255,215,0,0.2);
+  color: #ffffff;
+  border-color: #ffd700;
 }
 
 .btn-danger {
   background: linear-gradient(135deg, var(--danger-red) 0%, #6b2311 100%);
-  color: var(--text-primary);
+  color: #ffffff;
   border: 2px solid var(--danger-red);
 }
 
@@ -669,12 +676,13 @@ h3 {
   min-width: 44px;
   height: 44px;
   background: var(--accent-blue);
-  color: var(--text-primary);
+  color: #ffffff;
   border: none;
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all var(--transition-fast);
   font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 .mini:hover {
@@ -697,19 +705,20 @@ select {
   padding: 12px 16px;
   font-size: 1rem;
   font-family: 'Inter', sans-serif;
-  background: rgba(26,15,10,0.6);
-  border: 2px solid var(--border-color);
+  background: rgba(26,15,10,0.8);
+  border: 2px solid rgba(212,175,55,0.3);
   border-radius: var(--radius-md);
-  color: var(--text-primary);
+  color: #ffffff;
   transition: all var(--transition-normal);
+  text-shadow: none;
 }
 
 input:focus,
 select:focus {
   outline: none;
-  border-color: var(--accent-gold);
-  background: rgba(26,15,10,0.8);
-  box-shadow: 0 0 0 3px rgba(212,175,55,0.2);
+  border-color: #ffd700;
+  background: rgba(26,15,10,0.9);
+  box-shadow: 0 0 0 3px rgba(255,215,0,0.2);
 }
 
 input::placeholder {
@@ -720,10 +729,11 @@ label {
   display: block;
   font-weight: 600;
   margin-bottom: var(--spacing-sm);
-  color: var(--text-primary);
+  color: #ffffff;
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
 /* ============================================
@@ -758,7 +768,7 @@ label {
 
 .divider {
   height: 2px;
-  background: linear-gradient(90deg, transparent 0%, var(--border-color) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
   margin: var(--spacing-md) 0;
 }
 
@@ -769,23 +779,24 @@ label {
 .notice {
   padding: var(--spacing-md);
   border-radius: var(--radius-md);
-  background: rgba(90,61,43,0.15);
+  background: rgba(0,0,0,0.4);
   backdrop-filter: blur(10px);
   border: 2px solid;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
 }
 
 .notice.good {
-  background: rgba(106,153,78,0.15);
+  background: rgba(106,153,78,0.25);
   border-color: var(--success-green);
 }
 
 .notice.bad {
-  background: rgba(139,46,22,0.15);
+  background: rgba(139,46,22,0.25);
   border-color: var(--danger-red);
 }
 
 .notice.warning {
-  background: rgba(217,120,53,0.15);
+  background: rgba(217,120,53,0.25);
   border-color: var(--warning-orange);
 }
 
@@ -804,7 +815,7 @@ label {
 .kv b {
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #ffffff;
 }
 
 /* ============================================
@@ -816,16 +827,16 @@ label {
   justify-content: space-between;
   align-items: center;
   padding: var(--spacing-md);
-  background: rgba(90,61,43,0.2);
+  background: rgba(0,0,0,0.3);
   border-radius: var(--radius-md);
   margin: var(--spacing-sm) 0;
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(255,255,255,0.2);
 }
 
 .counter .name {
   font-weight: 600;
   font-size: 1rem;
-  color: var(--text-primary);
+  color: #ffffff;
 }
 
 .counter .sub {
@@ -845,7 +856,8 @@ label {
   font-weight: 700;
   min-width: 40px;
   text-align: center;
-  color: var(--text-dark);
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 /* ============================================
@@ -857,18 +869,19 @@ label {
   align-items: center;
   gap: var(--spacing-xs);
   padding: 6px 12px;
-  background: var(--accent-gold);
-  color: var(--bg-primary);
+  background: #ffd700;
+  color: #1a0f0a;
   border-radius: 999px;
   font-size: 0.85rem;
   font-weight: 600;
   box-shadow: var(--shadow-sm);
+  text-shadow: none;
 }
 
 .tag {
   display: inline-block;
   padding: 4px 8px;
-  background: rgba(90,61,43,0.3);
+  background: rgba(0,0,0,0.4);
   border-radius: var(--radius-sm);
   font-size: 0.75rem;
   font-weight: 500;
