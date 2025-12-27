@@ -277,13 +277,15 @@ export function Setup({ state, dispatch }){
               const isTopCard = index === 0;
               const zIndex = cards.length - index;
               
-              // Escalado para efecto de stack
-              const scale = 1 - (index * 0.03);
-              const yOffset = index * 12;
+              // Escalado para efecto de stack - más pronunciado
+              const scale = 1 - (index * 0.05);
+              const yOffset = index * 15;
               
-              // Sin blur, solo opacidad
+              // Opacidad visible para el stack
               let opacity = 1;
-              if (index > 0) opacity = 0; // Solo visible la carta superior
+              if (index === 1) opacity = 1; // Segunda carta visible
+              if (index === 2) opacity = 1; // Tercera carta visible
+              if (index > 2) opacity = 0; // Las demás ocultas
               
               // Transformación para la carta superior
               let transform = `scale(${scale}) translateY(${yOffset}px)`;
