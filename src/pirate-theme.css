@@ -25,6 +25,13 @@
   --border-color: #5a3d2b;      /* Marrón borde */
   --shadow-color: rgba(0,0,0,0.6);
   
+  /* Wooden box colors */
+  --wood-light: #8b6f47;        /* Madera clara */
+  --wood-medium: #6b5639;       /* Madera media */
+  --wood-dark: #4a3827;         /* Madera oscura */
+  --wood-border: #3a2817;       /* Borde madera */
+  --wood-highlight: #a88658;    /* Resalte madera */
+  
   /* Spacing */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
@@ -255,7 +262,119 @@ h3 {
 }
 
 /* ============================================
-   CARDS
+   WOODEN BOX CARDS
+   ============================================ */
+
+.wooden-box {
+  position: relative;
+  background: linear-gradient(135deg, var(--wood-medium) 0%, var(--wood-dark) 100%);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
+  color: var(--text-primary);
+  
+  /* 3D wooden border effect */
+  border: 8px solid;
+  border-color: 
+    var(--wood-highlight) 
+    var(--wood-dark) 
+    var(--wood-dark) 
+    var(--wood-highlight);
+  
+  /* Deep shadow for 3D effect */
+  box-shadow: 
+    0 8px 16px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    inset 0 -1px 0 rgba(0,0,0,0.5),
+    /* Side panels illusion */
+    -3px 0 8px rgba(0,0,0,0.3) inset,
+    3px 0 8px rgba(0,0,0,0.3) inset;
+  
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+/* Wood grain texture overlay */
+.wooden-box::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  border-radius: var(--radius-md);
+  background: 
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 3px,
+      rgba(0,0,0,0.1) 3px,
+      rgba(0,0,0,0.1) 4px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 80px,
+      rgba(0,0,0,0.05) 80px,
+      rgba(0,0,0,0.05) 82px
+    );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Wood knots and imperfections */
+.wooden-box::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: var(--radius-md);
+  background: 
+    radial-gradient(ellipse at 15% 25%, rgba(0,0,0,0.2) 0%, transparent 8%),
+    radial-gradient(ellipse at 75% 60%, rgba(0,0,0,0.15) 0%, transparent 6%),
+    radial-gradient(ellipse at 45% 80%, rgba(0,0,0,0.1) 0%, transparent 5%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Content inside wooden box */
+.wooden-box > * {
+  position: relative;
+  z-index: 2;
+}
+
+.wooden-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 12px 24px rgba(0,0,0,0.7),
+    inset 0 1px 0 rgba(255,255,255,0.15),
+    inset 0 -1px 0 rgba(0,0,0,0.5),
+    -3px 0 8px rgba(0,0,0,0.3) inset,
+    3px 0 8px rgba(0,0,0,0.3) inset;
+}
+
+/* Variation: Light wooden box */
+.wooden-box-light {
+  background: linear-gradient(135deg, var(--wood-light) 0%, var(--wood-medium) 100%);
+  border-color: 
+    var(--wood-highlight) 
+    var(--wood-medium) 
+    var(--wood-medium) 
+    var(--wood-highlight);
+}
+
+/* Variation: Dark wooden box */
+.wooden-box-dark {
+  background: linear-gradient(135deg, var(--wood-dark) 0%, var(--wood-border) 100%);
+  border-color: 
+    var(--wood-medium) 
+    var(--wood-border) 
+    var(--wood-border) 
+    var(--wood-medium);
+}
+
+/* ============================================
+   CARDS (Legacy - keep for non-wooden cards)
    ============================================ */
 
 .card {
