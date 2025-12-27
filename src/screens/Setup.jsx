@@ -58,7 +58,7 @@ export function Setup({ state, dispatch }){
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       {/* Config Card */}
-      <div className="card fade-in">
+      <div className="wooden-box fade-in">
         <h2>⚙️ Configuración de Partida</h2>
         
         <label>Modo de Juego</label>
@@ -128,7 +128,7 @@ export function Setup({ state, dispatch }){
       </div>
 
       {/* Tips Carousel */}
-      <div className="card card-dark fade-in" style={{ animationDelay: '0.1s' }}>
+      <div className="wooden-box wooden-box-dark fade-in" style={{ animationDelay: '0.1s' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <h2 style={{ margin: 0, color: 'var(--text-primary)' }}>📚 Guía Rápida</h2>
           <div style={{ display: 'flex', gap: '8px' }}>
