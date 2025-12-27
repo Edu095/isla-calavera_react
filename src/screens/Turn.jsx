@@ -11,6 +11,23 @@ export function Turn({ state, dispatch }){
     }
   };
 
+  // Helper to get dice description
+  const getDiceDescription = (key) => {
+    switch(key) {
+      case 'skull':
+        return '¡Cuidado! No puntúa';
+      case 'gold':
+      case 'diamond':
+        return '100 pts cada uno';
+      case 'saber':
+      case 'monkey':
+      case 'parrot':
+        return 'Puntúan en sets de 3+';
+      default:
+        return '';
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       {/* Action Card Selection */}
@@ -107,7 +124,7 @@ export function Turn({ state, dispatch }){
                       {t.label}
                     </div>
                     <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                      {isSkull ? '¡Cuidado! No puntúa' : '100 pts cada uno'}
+                      {getDiceDescription(t.key)}
                     </div>
                   </div>
                 </div>
