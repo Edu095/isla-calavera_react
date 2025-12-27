@@ -41,6 +41,19 @@ const TIPS = [
       'No se pueden guardar calaveras',
       'Estrategia avanzada para jugadores expertos'
     ]
+  },
+  {
+    emoji: '🌐',
+    title: 'Juega Online',
+    content: [
+      '¿Quieres jugar contra otros piratas?',
+      'Board Game Arena ofrece versión online gratuita',
+      'Juega desde tu navegador sin descargas',
+      'Miles de jugadores de todo el mundo'
+    ],
+    hasButton: true,
+    buttonText: '🎮 Jugar en Board Game Arena',
+    buttonUrl: 'https://boardgamearena.com/gamepanel?game=piratenkapern'
   }
 ];
 
@@ -167,6 +180,26 @@ export function Setup({ state, dispatch }){
               </li>
             ))}
           </ul>
+          
+          {/* Online Play Button */}
+          {TIPS[currentTip].hasButton && (
+            <div style={{ marginTop: '20px', textAlign: 'center' }}>
+              <a 
+                href={TIPS[currentTip].buttonUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-primary"
+                style={{ 
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  gap: '8px',
+                  fontSize: '1rem'
+                }}
+              >
+                {TIPS[currentTip].buttonText}
+              </a>
+            </div>
+          )}
         </div>
 
         {/* Dots Navigation */}
