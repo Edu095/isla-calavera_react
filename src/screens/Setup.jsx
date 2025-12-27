@@ -13,7 +13,7 @@ const TIPS = [
     ]
   },
   {
-    emoji: '🃏',
+    emoji: '🎴',
     title: 'Cartas de Acción',
     content: [
       'Cada turno se revela una carta',
@@ -97,7 +97,10 @@ export function Setup({ state, dispatch }){
               style={{ 
                 flex: 1,
                 fontSize: '1.5rem',
-                fontWeight: 'bold'
+                fontWeight: 'bold',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
             >
               {n}
