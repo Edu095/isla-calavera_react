@@ -3,7 +3,6 @@ import { useEffect, useRef } from 'react';
 export function ClothFlag({ onReset, showResetButton }) {
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
-  const clothRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -29,29 +28,24 @@ export function ClothFlag({ onReset, showResetButton }) {
         this.oldX = x;
         this.oldY = y;
         this.pinned = pinned;
-        this.mass = 1;
       }
 
-      update(delta) {
+      update(deltaTime) {
         if (this.pinned) return;
 
-        const velX = (this.x - this.oldX) * 0.98; // Damping
-        const velY = (this.y - this.oldY) * 0.98;
+        const friction = 0.995; // Higher = less friction
+        const velX = (this.x - this.oldX) * friction;
+        const velY = (this.y - this.oldY) * friction;
 
         this.oldX = this.x;
         this.oldY = this.y;
 
-        // Apply velocity and gravity
+        // Apply velocity
         this.x += velX;
-        this.y += velY + 0.3; // Reduced gravity for horizontal flag
+        this.y += velY;
 
-        // Horizontal wind effect (wave from left to right)
-        const time = Date.now() * 0.002;
-        const windStrength = Math.sin(time + this.x * 0.02) * 1.5;
-        const verticalWave = Math.cos(time * 1.5 + this.x * 0.03) * 0.8;
-        
-        this.y += verticalWave;
-        this.x += windStrength * 0.3;
+        // Very light gravity
+        this.y += 0.1 * deltaTime;
       }
 
       constrain(other, distance) {
@@ -90,17 +84,17 @@ export function ClothFlag({ onReset, showResetButton }) {
       }
     }
 
-    // Create cloth - HORIZONTAL orientation with more points
+    // Create cloth - HORIZONTAL orientation
     const rect = canvas.getBoundingClientRect();
-    const cols = 40; // More columns for horizontal flag
-    const rows = 16; // More rows for better flex
-    const flagWidth = Math.min(rect.width * 0.85, 700);
-    const flagHeight = 200;
+    const cols = 35;
+    const rows = 14;
+    const flagWidth = Math.min(rect.width * 0.8, 650);
+    const flagHeight = 180;
     const spacing = flagWidth / (cols - 1);
     const spacingY = flagHeight / (rows - 1);
     
     const startX = (rect.width - flagWidth) / 2;
-    const startY = 40;
+    const startY = 50;
 
     const points = [];
     const sticks = [];
@@ -108,36 +102,47 @@ export function ClothFlag({ onReset, showResetButton }) {
     // Create points grid
     for (let y = 0; y < rows; y++) {
       for (let x = 0; x < cols; x++) {
-        // Pin left edge only (first column)
+        // Pin left edge
         const pinned = x === 0;
         points.push(new Point(startX + x * spacing, startY + y * spacingY, pinned));
       }
     }
 
-    // Create constraints (sticks)
+    // Create constraints
     for (let y = 0; y < rows; y++) {
       for (let x = 0; x < cols; x++) {
         const i = y * cols + x;
         
-        // Horizontal stick
+        // Horizontal
         if (x < cols - 1) {
           sticks.push(new Stick(points[i], points[i + 1]));
         }
         
-        // Vertical stick
+        // Vertical
         if (y < rows - 1) {
           sticks.push(new Stick(points[i], points[i + cols]));
-        }
-
-        // Diagonal sticks for more stability
-        if (x < cols - 1 && y < rows - 1) {
-          sticks.push(new Stick(points[i], points[i + cols + 1]));
-          sticks.push(new Stick(points[i + 1], points[i + cols]));
         }
       }
     }
 
-    clothRef.current = { points, sticks };
+    // Wind force simulation
+    const applyWind = (time) => {
+      points.forEach((p, index) => {
+        if (p.pinned) return;
+        
+        const col = index % cols;
+        const row = Math.floor(index / cols);
+        
+        // Horizontal wave from left to right
+        const waveOffset = col * 0.15;
+        const verticalWave = Math.sin(time * 2 + waveOffset) * 0.8;
+        const horizontalWave = Math.cos(time * 1.5 + waveOffset) * 0.4;
+        
+        // Apply wind force
+        p.y += verticalWave;
+        p.x += horizontalWave;
+      });
+    };
 
     // Mouse interaction
     let mouseX = -1000;
@@ -157,6 +162,7 @@ export function ClothFlag({ onReset, showResetButton }) {
       const pos = getMousePos(e);
       mouseX = pos.x;
       mouseY = pos.y;
+      e.preventDefault();
     };
 
     const handleMouseMove = (e) => {
@@ -165,17 +171,16 @@ export function ClothFlag({ onReset, showResetButton }) {
       mouseY = pos.y;
 
       if (isDragging) {
-        // Pull cloth with mouse
         points.forEach(p => {
           if (p.pinned) return;
           const dx = mouseX - p.x;
           const dy = mouseY - p.y;
           const dist = Math.sqrt(dx * dx + dy * dy);
           
-          if (dist < 60) {
-            const force = (60 - dist) / 60;
-            p.x += dx * force * 0.15;
-            p.y += dy * force * 0.15;
+          if (dist < 70) {
+            const force = (70 - dist) / 70;
+            p.x += dx * force * 0.2;
+            p.y += dy * force * 0.2;
           }
         });
       }
@@ -189,30 +194,31 @@ export function ClothFlag({ onReset, showResetButton }) {
     canvas.addEventListener('mousemove', handleMouseMove);
     canvas.addEventListener('mouseup', handleMouseUp);
     canvas.addEventListener('mouseleave', handleMouseUp);
-    canvas.addEventListener('touchstart', handleMouseDown, { passive: true });
-    canvas.addEventListener('touchmove', handleMouseMove, { passive: true });
+    canvas.addEventListener('touchstart', handleMouseDown, { passive: false });
+    canvas.addEventListener('touchmove', handleMouseMove, { passive: false });
     canvas.addEventListener('touchend', handleMouseUp);
 
     // Animation loop
-    let lastTime = Date.now();
+    let lastTime = performance.now();
 
-    const animate = () => {
-      const now = Date.now();
-      const delta = (now - lastTime) / 16.67; // Normalize to 60fps
-      lastTime = now;
+    const animate = (currentTime) => {
+      const deltaTime = Math.min((currentTime - lastTime) / 16.67, 2); // Cap at 2x speed
+      lastTime = currentTime;
 
       const rect = canvas.getBoundingClientRect();
       ctx.clearRect(0, 0, rect.width, rect.height);
 
+      // Apply wind
+      applyWind(currentTime * 0.001);
+
       // Update physics (multiple iterations for stability)
-      for (let i = 0; i < 5; i++) {
-        points.forEach(p => p.update(delta));
+      for (let iteration = 0; iteration < 4; iteration++) {
+        points.forEach(p => p.update(deltaTime));
         sticks.forEach(s => s.update());
       }
 
       // Draw cloth - smooth black
       ctx.fillStyle = '#000000';
-      ctx.strokeStyle = 'rgba(0,0,0,0)';
 
       // Draw filled triangles
       for (let y = 0; y < rows - 1; y++) {
@@ -223,7 +229,6 @@ export function ClothFlag({ onReset, showResetButton }) {
           const p3 = points[i + cols];
           const p4 = points[i + cols + 1];
 
-          // Triangle 1
           ctx.beginPath();
           ctx.moveTo(p1.x, p1.y);
           ctx.lineTo(p2.x, p2.y);
@@ -231,7 +236,6 @@ export function ClothFlag({ onReset, showResetButton }) {
           ctx.closePath();
           ctx.fill();
 
-          // Triangle 2
           ctx.beginPath();
           ctx.moveTo(p2.x, p2.y);
           ctx.lineTo(p4.x, p4.y);
@@ -241,46 +245,46 @@ export function ClothFlag({ onReset, showResetButton }) {
         }
       }
 
-      // Draw skull and title on cloth center
+      // Draw skull and title
       const centerCol = Math.floor(cols / 2);
       const centerRow = Math.floor(rows / 2);
       const centerPoint = points[centerRow * cols + centerCol];
 
-      // Calculate average rotation from nearby points for text alignment
-      const leftPoint = points[centerRow * cols + centerCol - 2];
-      const rightPoint = points[centerRow * cols + centerCol + 2];
+      // Calculate rotation from nearby points
+      const leftPoint = points[centerRow * cols + Math.max(0, centerCol - 3)];
+      const rightPoint = points[centerRow * cols + Math.min(cols - 1, centerCol + 3)];
       const angle = Math.atan2(rightPoint.y - leftPoint.y, rightPoint.x - leftPoint.x);
 
       // Skull
       ctx.save();
       ctx.translate(centerPoint.x, centerPoint.y - 35);
       ctx.rotate(angle);
-      ctx.font = '56px serif';
+      ctx.font = '60px serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.shadowColor = 'rgba(0,0,0,0.9)';
-      ctx.shadowBlur = 12;
+      ctx.shadowBlur = 15;
       ctx.fillStyle = '#ffffff';
       ctx.fillText('☠️', 0, 0);
       ctx.restore();
 
       // Title
       ctx.save();
-      ctx.translate(centerPoint.x, centerPoint.y + 35);
+      ctx.translate(centerPoint.x, centerPoint.y + 40);
       ctx.rotate(angle);
-      ctx.font = 'bold 38px "Pirata One", cursive';
+      ctx.font = 'bold 42px "Pirata One", cursive';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillStyle = '#d4af37';
-      ctx.shadowColor = 'rgba(212,175,55,0.8)';
-      ctx.shadowBlur = 16;
+      ctx.shadowColor = 'rgba(212,175,55,0.9)';
+      ctx.shadowBlur = 18;
       ctx.fillText('Isla Calavera', 0, 0);
       ctx.restore();
 
       animationRef.current = requestAnimationFrame(animate);
     };
 
-    animate();
+    animationRef.current = requestAnimationFrame(animate);
 
     // Cleanup
     return () => {
@@ -309,7 +313,7 @@ export function ClothFlag({ onReset, showResetButton }) {
           width: '100%',
           height: '280px',
           display: 'block',
-          cursor: 'grab',
+          cursor: isDragging ? 'grabbing' : 'grab',
           background: 'transparent'
         }}
       />
