@@ -14,33 +14,44 @@ export default function App(){
   const initialState = useMemo(() => createInitialState(), []);
   const [state, dispatch] = useReducer(gameReducer, initialState);
 
-  const reset = () => dispatch({ type: 'RESET_GAME', initialState: initialState });
+  const reset = () => {
+    if (state.screen !== 'setup' && state.screen !== 'tests') {
+      if (window.confirm('\u00bfSeguro que quieres empezar una nueva partida? Se perder\u00e1 el progreso actual.')) {
+        dispatch({ type: 'RESET_GAME', initialState: initialState });
+      }
+    } else {
+      dispatch({ type: 'RESET_GAME', initialState: initialState });
+    }
+  };
+  
   const showScoreboard = ['turn', 'skullIsland', 'finished'].includes(state.screen);
+  const showHeader = state.screen !== 'finished'; // Hide header on finished screen for cleaner look
 
   return (
     <div className="appFrame">
       <div className="container">
-        <header className="card topbar">
-          <div className="topbarRow">
-            <div>
-              <h1 className="brandTitle">Isla Calavera</h1>
-              <div className="subtitle">Contador de puntuación con cartas y dados (2–5 jugadores)</div>
-            </div>
+        {showHeader && (
+          <header className="card topbar fade-in">
+            <div className="topbarRow">
+              <div>
+                <h1 className="brandTitle">\ud83c\udff4\u200d\u2620\ufe0f Isla Calavera \ud83d\udc80</h1>
+                <div className="subtitle">Contador digital de puntuaci\u00f3n para 2\u20135 piratas</div>
+              </div>
 
-            <div className="headerActions">
-              <button
-                className="btn btn-ghost"
-                onClick={() => dispatch({ type: 'NAVIGATE', screen: 'tests' })}
-              >
-                Tests
-              </button>
-
-              <button className="btn btn-primary" onClick={reset}>
-                Nueva partida
-              </button>
+              <div className="headerActions">
+                {state.screen !== 'setup' && state.screen !== 'tests' && (
+                  <button
+                    className="btn btn-danger"
+                    onClick={reset}
+                    title="Empezar una nueva partida desde cero"
+                  >
+                    \ud83d\udd04 Nueva Partida
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
-        </header>
+          </header>
+        )}
 
         <div style={{ height: 12 }} />
 
