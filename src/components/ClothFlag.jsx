@@ -15,15 +15,15 @@ export function ClothFlag({ onReset, showResetButton }) {
     const height = 400;
     
     const camera = new THREE.PerspectiveCamera(60, width / height, 1, 1000);
-    camera.position.set(0, 0, 70); // Moved back for wider flag
+    camera.position.set(0, 0, 70);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     const renderer = new THREE.WebGLRenderer({ 
       antialias: true, 
-      alpha: true 
+      alpha: true // Enable alpha for transparent background
     });
     renderer.setSize(width, height);
-    renderer.setClearColor(0x000000, 0);
+    renderer.setClearColor(0x000000, 0); // Transparent background
     containerRef.current.appendChild(renderer.domElement);
 
     // Lighting
@@ -34,10 +34,10 @@ export function ClothFlag({ onReset, showResetButton }) {
     const ambientLight = new THREE.AmbientLight(0x999999);
     scene.add(ambientLight);
 
-    // Flag geometry - More elongated (wider)
-    const flagWidth = 60;  // Increased from 50
-    const flagHeight = 30; // Reduced from 32 for more elongated ratio
-    const segmentsW = 50;  // More segments for smoother wave
+    // Flag geometry
+    const flagWidth = 60;
+    const flagHeight = 30;
+    const segmentsW = 50;
     const segmentsH = 25;
 
     const geometry = new THREE.PlaneGeometry(
@@ -54,23 +54,23 @@ export function ClothFlag({ onReset, showResetButton }) {
         const textureLoader = new THREE.TextureLoader();
         
         textureLoader.load(
-          '/flag-title.png', // Image path in public folder
+          '/flag-title.png',
           (loadedTexture) => {
             console.log('Flag image loaded successfully');
             resolve(loadedTexture);
           },
           undefined,
           (error) => {
-            // Fallback: create canvas with text
+            // Fallback: create canvas with text and transparent background
             console.log('Image not found, using canvas fallback');
             const canvas = document.createElement('canvas');
             canvas.width = 1024;
-            canvas.height = 512; // Adjusted ratio for wider flag
+            canvas.height = 512;
             const ctx = canvas.getContext('2d');
 
-            // Black background
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // Transparent background - don't fill
+            // ctx.fillStyle = '#000000';
+            // ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // Draw skull
             ctx.font = 'bold 160px serif';
@@ -100,15 +100,18 @@ export function ClothFlag({ onReset, showResetButton }) {
 
       const material = new THREE.MeshLambertMaterial({
         map: texture,
-        side: THREE.DoubleSide
+        side: THREE.DoubleSide,
+        transparent: true,      // Enable transparency
+        alphaTest: 0.1,         // Discard pixels with alpha < 0.1
+        opacity: 1              // Full opacity for non-transparent areas
       });
 
       const flag = new THREE.Mesh(geometry, material);
       scene.add(flag);
 
-      sceneRef.current = { scene, camera, renderer, flag, geometry, texture };
+      sceneRef.current = { scene, camera, renderer, flag, geometry, texture, material };
 
-      // Wave animation parameters - Updated values
+      // Wave animation parameters
       const waveParams = {
         horizontal: 0.3,
         vertical: 0.2,
@@ -183,8 +186,9 @@ export function ClothFlag({ onReset, showResetButton }) {
         containerRef.current.removeChild(renderer.domElement);
       }
       if (sceneRef.current) {
-        const { geometry, texture } = sceneRef.current;
+        const { geometry, texture, material } = sceneRef.current;
         if (geometry) geometry.dispose();
+        if (material) material.dispose();
         if (texture) texture.dispose();
       }
       renderer.dispose();
