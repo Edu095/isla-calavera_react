@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { FORTUNE } from '../engine/constants.js';
 
 const TIPS = [
@@ -59,78 +59,104 @@ const TIPS = [
 
 export function Setup({ state, dispatch }){
   const [cards, setCards] = useState(TIPS);
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
   const [startX, setStartX] = useState(0);
+  const [startY, setStartY] = useState(0);
   const [currentX, setCurrentX] = useState(0);
+  const [currentY, setCurrentY] = useState(0);
+  const cardStackRef = useRef(null);
 
-  const handleTouchStart = (e) => {
+  const handleStart = (clientX, clientY) => {
     setIsSwiping(true);
-    setStartX(e.touches[0].clientX);
-    setCurrentX(e.touches[0].clientX);
+    setStartX(clientX);
+    setStartY(clientY);
+    setCurrentX(clientX);
+    setCurrentY(clientY);
+  };
+
+  const handleMove = (clientX, clientY) => {
+    if (!isSwiping) return;
+    setCurrentX(clientX);
+    setCurrentY(clientY);
+  };
+
+  const handleEnd = () => {
+    if (!isSwiping) return;
+    
+    const deltaX = currentX - startX;
+    const deltaY = currentY - startY;
+    const threshold = 100;
+
+    // Detectar dirección de swipe
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      // Swipe horizontal
+      if (Math.abs(deltaX) > threshold) {
+        moveToBack();
+      }
+    }
+
+    setIsSwiping(false);
+    setStartX(0);
+    setStartY(0);
+    setCurrentX(0);
+    setCurrentY(0);
+  };
+
+  const moveToBack = () => {
+    // Mover la primera carta al final del array
+    setTimeout(() => {
+      setCards(prev => {
+        const newCards = [...prev];
+        const topCard = newCards.shift();
+        newCards.push(topCard);
+        return newCards;
+      });
+      setCurrentCardIndex((prev) => (prev + 1) % TIPS.length);
+    }, 300);
+  };
+
+  // Event handlers para touch
+  const handleTouchStart = (e) => {
+    handleStart(e.touches[0].clientX, e.touches[0].clientY);
   };
 
   const handleTouchMove = (e) => {
     if (!isSwiping) return;
-    setCurrentX(e.touches[0].clientX);
+    e.preventDefault();
+    handleMove(e.touches[0].clientX, e.touches[0].clientY);
   };
 
   const handleTouchEnd = () => {
-    if (!isSwiping) return;
-    
-    const deltaX = currentX - startX;
-    const threshold = 80;
-
-    if (Math.abs(deltaX) > threshold) {
-      setTimeout(() => {
-        setCards(prev => {
-          const newCards = [...prev];
-          const topCard = newCards.shift();
-          newCards.push(topCard);
-          return newCards;
-        });
-      }, 300);
-    }
-
-    setIsSwiping(false);
-    setStartX(0);
-    setCurrentX(0);
+    handleEnd();
   };
 
+  // Event handlers para mouse
   const handleMouseDown = (e) => {
-    setIsSwiping(true);
-    setStartX(e.clientX);
-    setCurrentX(e.clientX);
+    handleStart(e.clientX, e.clientY);
   };
 
   const handleMouseMove = (e) => {
     if (!isSwiping) return;
-    setCurrentX(e.clientX);
+    handleMove(e.clientX, e.clientY);
   };
 
   const handleMouseUp = () => {
-    if (!isSwiping) return;
-    
-    const deltaX = currentX - startX;
-    const threshold = 80;
-
-    if (Math.abs(deltaX) > threshold) {
-      setTimeout(() => {
-        setCards(prev => {
-          const newCards = [...prev];
-          const topCard = newCards.shift();
-          newCards.push(topCard);
-          return newCards;
-        });
-      }, 300);
-    }
-
-    setIsSwiping(false);
-    setStartX(0);
-    setCurrentX(0);
+    handleEnd();
   };
 
+  const handleMouseLeave = () => {
+    if (isSwiping) {
+      handleEnd();
+    }
+  };
+
+  // Calcular transformación de swipe
   const swipeX = isSwiping ? currentX - startX : 0;
-  const swipeRotate = isSwiping ? (swipeX / 20) : 0;
+  const swipeY = isSwiping ? currentY - startY : 0;
+  const maxSwipe = 250;
+  const swipeProgress = Math.min(Math.abs(swipeX) / maxSwipe, 1);
+  const swipeRotate = (swipeX / maxSwipe) * 25;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -222,100 +248,164 @@ export function Setup({ state, dispatch }){
         </p>
 
         <div 
-          className="card-stack-container"
+          ref={cardStackRef}
+          className="card-stack-wrapper"
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
           style={{
             position: 'relative',
             width: '100%',
             height: '450px',
-            perspective: '700px',
-            userSelect: 'none'
+            perspective: '1000px',
+            userSelect: 'none',
+            WebkitUserSelect: 'none',
+            touchAction: 'pan-y'
           }}
         >
           <div className="card-stack">
-            {cards.map((tip, index) => (
-              <div
-                key={`${tip.title}-${index}`}
-                className="tip-card"
-                style={{
-                  '--i': index,
-                  '--swipe-x': index === 0 ? `${swipeX}px` : '0px',
-                  '--swipe-rotate': index === 0 ? `${swipeRotate}deg` : '0deg',
-                }}
-                onMouseDown={index === 0 ? handleMouseDown : undefined}
-                onMouseMove={index === 0 ? handleMouseMove : undefined}
-                onMouseUp={index === 0 ? handleMouseUp : undefined}
-                onMouseLeave={index === 0 ? handleMouseUp : undefined}
-                onTouchStart={index === 0 ? handleTouchStart : undefined}
-                onTouchMove={index === 0 ? handleTouchMove : undefined}
-                onTouchEnd={index === 0 ? handleTouchEnd : undefined}
-              >
-                <div className="tip-card-content">
-                  <div style={{ textAlign: 'center', fontSize: '3.5rem', marginBottom: '16px' }}>
-                    {tip.emoji}
-                  </div>
-                  <h3 style={{ 
-                    textAlign: 'center', 
-                    color: 'var(--text-primary)', 
-                    marginBottom: '20px',
-                    fontSize: '1.4rem'
-                  }}>
-                    {tip.title}
-                  </h3>
-                  <ul style={{ 
-                    listStyle: 'none', 
-                    padding: 0,
-                    color: 'var(--text-primary)',
-                    fontSize: '0.95rem',
-                    lineHeight: '1.8'
-                  }}>
-                    {tip.content.map((item, idx) => (
-                      <li key={idx} style={{ 
-                        marginBottom: '10px', 
-                        paddingLeft: '24px', 
-                        position: 'relative' 
-                      }}>
-                        <span style={{ 
-                          position: 'absolute', 
-                          left: 0,
-                          color: 'var(--accent-gold)'
-                        }}>•</span>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                  
-                  {tip.hasButton && (
-                    <div style={{ marginTop: '20px', textAlign: 'center' }}>
-                      <a 
-                        href={tip.buttonUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn btn-primary"
-                        style={{ 
-                          textDecoration: 'none',
-                          display: 'inline-flex',
-                          gap: '8px',
-                          fontSize: '0.95rem'
-                        }}
-                      >
-                        {tip.buttonText}
-                      </a>
+            {cards.map((tip, index) => {
+              const zIndex = cards.length - index;
+              const isTopCard = index === 0;
+              const scale = 1 - (index * 0.03);
+              const yOffset = index * 12;
+              const zOffset = index * -15;
+              
+              // Solo aplicar transformación de swipe a la carta superior
+              const transform = isTopCard && isSwiping
+                ? `translateX(${swipeX}px) translateY(${swipeY * 0.3}px) rotateZ(${swipeRotate}deg) scale(${scale}) translateY(${yOffset}px) translateZ(${zOffset}px)`
+                : `scale(${scale}) translateY(${yOffset}px) translateZ(${zOffset}px)`;
+              
+              const opacity = index > 2 ? 0 : 1 - (index * 0.25);
+
+              return (
+                <div
+                  key={`${tip.title}-${index}`}
+                  className={`tip-card ${isTopCard ? 'active' : ''}`}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    zIndex: zIndex,
+                    transform: transform,
+                    opacity: opacity,
+                    transition: isTopCard && isSwiping 
+                      ? 'none' 
+                      : 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                    cursor: isTopCard ? (isSwiping ? 'grabbing' : 'grab') : 'default',
+                    pointerEvents: isTopCard ? 'auto' : 'none',
+                    transformStyle: 'preserve-3d'
+                  }}
+                >
+                  <div className="tip-card-content">
+                    <div style={{ textAlign: 'center', fontSize: '3.5rem', marginBottom: '16px' }}>
+                      {tip.emoji}
                     </div>
-                  )}
+                    <h3 style={{ 
+                      textAlign: 'center', 
+                      color: 'var(--text-primary)', 
+                      marginBottom: '20px',
+                      fontSize: '1.4rem'
+                    }}>
+                      {tip.title}
+                    </h3>
+                    <ul style={{ 
+                      listStyle: 'none', 
+                      padding: 0,
+                      color: 'var(--text-primary)',
+                      fontSize: '0.95rem',
+                      lineHeight: '1.8'
+                    }}>
+                      {tip.content.map((item, idx) => (
+                        <li key={idx} style={{ 
+                          marginBottom: '10px', 
+                          paddingLeft: '24px', 
+                          position: 'relative' 
+                        }}>
+                          <span style={{ 
+                            position: 'absolute', 
+                            left: 0,
+                            color: 'var(--accent-gold)'
+                          }}>•</span>
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                    
+                    {tip.hasButton && (
+                      <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                        <a 
+                          href={tip.buttonUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn btn-primary"
+                          style={{ 
+                            textDecoration: 'none',
+                            display: 'inline-flex',
+                            gap: '8px',
+                            fontSize: '0.95rem',
+                            pointerEvents: 'auto'
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {tip.buttonText}
+                        </a>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
-        {/* Card Counter */}
+        {/* Card Counter & Indicators */}
         <div style={{ 
-          marginTop: '16px', 
-          textAlign: 'center', 
-          color: 'var(--text-muted)',
-          fontSize: '0.85rem'
+          marginTop: '20px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '12px'
         }}>
-          Carta {cards.length > 0 ? '1' : '0'} de {TIPS.length}
+          {/* Indicadores de puntos */}
+          <div style={{ 
+            display: 'flex', 
+            gap: '8px',
+            justifyContent: 'center'
+          }}>
+            {TIPS.map((_, idx) => (
+              <div
+                key={idx}
+                style={{
+                  width: currentCardIndex === idx ? '24px' : '8px',
+                  height: '8px',
+                  borderRadius: '4px',
+                  background: currentCardIndex === idx 
+                    ? 'var(--accent-gold)' 
+                    : 'rgba(255,255,255,0.3)',
+                  transition: 'all 0.3s ease',
+                  boxShadow: currentCardIndex === idx 
+                    ? '0 0 8px rgba(255,215,0,0.6)' 
+                    : 'none'
+                }}
+              />
+            ))}
+          </div>
+          
+          {/* Contador de carta */}
+          <div style={{ 
+            textAlign: 'center', 
+            color: 'var(--text-muted)',
+            fontSize: '0.85rem'
+          }}>
+            Carta {currentCardIndex + 1} de {TIPS.length}
+          </div>
         </div>
       </div>
 
