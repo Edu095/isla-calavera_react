@@ -282,7 +282,7 @@ h3 {
 }
 
 /* ============================================
-   WOODEN BOX CARDS - REAL WOOD TEXTURE
+   WOODEN BOX CARDS - REAL WOOD TEXTURE (NO BORDERS)
    ============================================ */
 
 .wooden-box {
@@ -293,29 +293,18 @@ h3 {
   background-position: center;
   background-repeat: no-repeat;
   
-  /* Straight edges but with slight roughness */
-  border-radius: 2px;
-  
-  padding: calc(var(--spacing-lg) + 18px);
+  border-radius: 4px;
+  padding: var(--spacing-lg);
   color: var(--text-primary);
   
-  /* Thick weathered frame with irregular inner edge effect */
-  border: 18px solid;
-  border-color: 
-    #8b7555
-    #3f3220
-    #3f3220
-    #8b7555;
+  /* No thick border - just subtle edge definition */
+  border: 2px solid rgba(0,0,0,0.3);
   
-  /* Very deep shadows for 3D depth */
+  /* Enhanced shadows for depth without border */
   box-shadow: 
-    0 18px 36px rgba(0,0,0,0.85),
-    inset 0 4px 0 rgba(255,255,255,0.15),
-    inset 0 -4px 0 rgba(0,0,0,0.8),
-    inset -8px 0 20px rgba(0,0,0,0.6),
-    inset 8px 0 20px rgba(0,0,0,0.6),
-    -10px 0 20px rgba(0,0,0,0.5),
-    10px 0 20px rgba(0,0,0,0.5);
+    0 20px 40px rgba(0,0,0,0.9),
+    inset 0 2px 0 rgba(255,255,255,0.1),
+    inset 0 -2px 0 rgba(0,0,0,0.6);
   
   transition: transform var(--transition-normal), box-shadow var(--transition-normal);
 }
@@ -324,11 +313,11 @@ h3 {
 .wooden-box::before {
   content: '';
   position: absolute;
-  top: -18px;
-  left: -18px;
-  right: -18px;
-  bottom: -18px;
-  border-radius: 2px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 4px;
   background: 
     /* Subtle darkening overlay */
     linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.25) 100%),
@@ -350,7 +339,7 @@ h3 {
   left: 0;
   right: 0;
   bottom: 0;
-  border-radius: 2px;
+  border-radius: 4px;
   background: 
     /* Deep long scratches */
     linear-gradient(87deg, transparent 18%, rgba(0,0,0,0.25) 18.1%, transparent 18.3%),
@@ -371,23 +360,15 @@ h3 {
 .wooden-box:hover {
   transform: translateY(-3px);
   box-shadow: 
-    0 22px 44px rgba(0,0,0,0.9),
-    inset 0 4px 0 rgba(255,255,255,0.2),
-    inset 0 -4px 0 rgba(0,0,0,0.8),
-    inset -8px 0 20px rgba(0,0,0,0.6),
-    inset 8px 0 20px rgba(0,0,0,0.6),
-    -10px 0 20px rgba(0,0,0,0.5),
-    10px 0 20px rgba(0,0,0,0.5);
+    0 24px 48px rgba(0,0,0,0.95),
+    inset 0 2px 0 rgba(255,255,255,0.15),
+    inset 0 -2px 0 rgba(0,0,0,0.6);
 }
 
 /* Variation: Light wooden box (uses same texture with lighter overlay) */
 .wooden-box-light {
   background-image: url('/textures/wooden-box.jpg');
-  border-color: 
-    #b89970
-    #5d4a2f
-    #5d4a2f
-    #b89970;
+  border: 2px solid rgba(139,117,85,0.3);
 }
 
 .wooden-box-light::before {
@@ -402,11 +383,7 @@ h3 {
 /* Variation: Dark wooden box (uses darker texture) */
 .wooden-box-dark {
   background-image: url('/textures/wooden-box-dark.jpg');
-  border-color: 
-    #6d5838
-    #2d2415
-    #2d2415
-    #6d5838;
+  border: 2px solid rgba(0,0,0,0.4);
 }
 
 .wooden-box-dark::before {
@@ -420,7 +397,7 @@ h3 {
 }
 
 /* ============================================
-   CARDS - NOW WITH WOODEN TEXTURE
+   CARDS - WITH WOODEN TEXTURE (NO BORDERS)
    ============================================ */
 
 .card {
@@ -434,19 +411,14 @@ h3 {
   border-radius: 4px;
   padding: var(--spacing-lg);
   color: var(--text-primary);
-  border: 12px solid;
-  border-color: 
-    #8b7555
-    #3f3220
-    #3f3220
-    #8b7555;
+  
+  /* Subtle border only */
+  border: 2px solid rgba(0,0,0,0.3);
   
   box-shadow: 
     0 12px 24px rgba(0,0,0,0.75),
-    inset 0 2px 0 rgba(255,255,255,0.1),
-    inset 0 -2px 0 rgba(0,0,0,0.6),
-    -6px 0 12px rgba(0,0,0,0.4),
-    6px 0 12px rgba(0,0,0,0.4);
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    inset 0 -1px 0 rgba(0,0,0,0.5);
   
   transition: transform var(--transition-normal), box-shadow var(--transition-normal);
 }
@@ -454,10 +426,10 @@ h3 {
 .card::before {
   content: '';
   position: absolute;
-  top: -12px;
-  left: -12px;
-  right: -12px;
-  bottom: -12px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   border-radius: 4px;
   background: 
     linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.2) 100%),
@@ -491,19 +463,13 @@ h3 {
   transform: translateY(-2px);
   box-shadow: 
     0 16px 32px rgba(0,0,0,0.85),
-    inset 0 2px 0 rgba(255,255,255,0.15),
-    inset 0 -2px 0 rgba(0,0,0,0.6),
-    -6px 0 12px rgba(0,0,0,0.4),
-    6px 0 12px rgba(0,0,0,0.4);
+    inset 0 1px 0 rgba(255,255,255,0.12),
+    inset 0 -1px 0 rgba(0,0,0,0.5);
 }
 
 .card-dark {
   background-image: url('/textures/wooden-box-dark.jpg');
-  border-color: 
-    #6d5838
-    #2d2415
-    #2d2415
-    #6d5838;
+  border: 2px solid rgba(0,0,0,0.4);
 }
 
 .card-dark::before {
@@ -516,7 +482,7 @@ h3 {
 .card-transparent {
   background-image: url('/textures/wooden-box.jpg');
   backdrop-filter: blur(10px);
-  border-color: rgba(90,61,43,0.8);
+  border: 2px solid rgba(90,61,43,0.5);
 }
 
 .card-transparent::before {
@@ -526,7 +492,7 @@ h3 {
 }
 
 /* ============================================
-   HEADER / TOPBAR - WITH WOODEN TEXTURE
+   HEADER / TOPBAR - WITH WOODEN TEXTURE (NO THICK BORDER)
    ============================================ */
 
 .topbar {
@@ -540,27 +506,23 @@ h3 {
   padding: var(--spacing-lg);
   border-radius: 4px;
   
-  border: 12px solid;
-  border-color: 
-    #b89970
-    #5d4a2f
-    #5d4a2f
-    #b89970;
+  /* Subtle gold-tinted border */
+  border: 2px solid rgba(212,175,55,0.3);
   
   box-shadow: 
     0 8px 20px rgba(212,175,55,0.3),
     0 12px 24px rgba(0,0,0,0.7),
-    inset 0 2px 0 rgba(255,255,255,0.12),
-    inset 0 -2px 0 rgba(0,0,0,0.6);
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    inset 0 -1px 0 rgba(0,0,0,0.5);
 }
 
 .topbar::before {
   content: '';
   position: absolute;
-  top: -12px;
-  left: -12px;
-  right: -12px;
-  bottom: -12px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   border-radius: 4px;
   background: 
     linear-gradient(180deg, rgba(212,175,55,0.05) 0%, rgba(0,0,0,0.15) 100%),
