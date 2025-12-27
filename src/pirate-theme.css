@@ -263,77 +263,104 @@ h3 {
 }
 
 /* ============================================
-   WOODEN BOX CARDS - REALISTIC PLANKS
+   WOODEN BOX CARDS - ULTRA REALISTIC PLANKS
    ============================================ */
 
 .wooden-box {
   position: relative;
   background: 
-    /* Horizontal planks pattern */
+    /* Individual wooden planks with color variation */
     linear-gradient(180deg, 
-      var(--wood-light) 0%, 
-      var(--wood-medium) 20%,
-      var(--wood-dark) 40%,
-      var(--wood-medium) 60%,
-      var(--wood-light) 80%,
-      var(--wood-medium) 100%
+      #9d7f52 0%, 
+      #9d7f52 18%,
+      transparent 18%, transparent 19%,
+      #8b6f47 19%,
+      #8b6f47 37%,
+      transparent 37%, transparent 38%,
+      #a68a5c 38%,
+      #a68a5c 56%,
+      transparent 56%, transparent 57%,
+      #8b6f47 57%,
+      #8b6f47 75%,
+      transparent 75%, transparent 76%,
+      #9d7f52 76%,
+      #9d7f52 94%,
+      transparent 94%, transparent 95%,
+      #8b6f47 95%,
+      #8b6f47 100%
     );
-  border-radius: var(--radius-sm);
-  padding: calc(var(--spacing-lg) + 12px);
+  border-radius: 2px; /* Esquinas casi cuadradas */
+  padding: calc(var(--spacing-lg) + 16px);
   color: var(--text-primary);
   
-  /* Thick 3D wooden frame */
-  border: 12px solid;
+  /* Thick 3D wooden frame - very pronounced */
+  border: 16px solid;
   border-color: 
     var(--wood-highlight) 
     var(--wood-darker) 
     var(--wood-darker) 
     var(--wood-highlight);
+  border-image: 
+    linear-gradient(
+      135deg,
+      #e5d0b8 0%,
+      #c9a876 25%,
+      #4a3827 50%,
+      #3a2817 75%,
+      #c9a876 100%
+    ) 1;
   
-  /* Deep shadow for 3D effect */
+  /* Very deep shadows for maximum 3D effect */
   box-shadow: 
-    0 12px 24px rgba(0,0,0,0.7),
-    inset 0 2px 0 rgba(255,255,255,0.15),
-    inset 0 -2px 0 rgba(0,0,0,0.6),
-    inset -4px 0 12px rgba(0,0,0,0.4),
-    inset 4px 0 12px rgba(0,0,0,0.4);
+    0 16px 32px rgba(0,0,0,0.8),
+    inset 0 3px 0 rgba(255,255,255,0.2),
+    inset 0 -3px 0 rgba(0,0,0,0.7),
+    inset -6px 0 16px rgba(0,0,0,0.5),
+    inset 6px 0 16px rgba(0,0,0,0.5),
+    /* Extra depth on edges */
+    -8px 0 16px rgba(0,0,0,0.4),
+    8px 0 16px rgba(0,0,0,0.4);
   
   transition: transform var(--transition-normal), box-shadow var(--transition-normal);
 }
 
-/* Realistic wood grain texture with vertical lines */
+/* Ultra realistic wood grain texture with prominent vertical lines */
 .wooden-box::before {
   content: '';
   position: absolute;
-  top: -12px;
-  left: -12px;
-  right: -12px;
-  bottom: -12px;
-  border-radius: var(--radius-sm);
+  top: -16px;
+  left: -16px;
+  right: -16px;
+  bottom: -16px;
+  border-radius: 2px;
   background: 
-    /* Vertical wood grain */
+    /* Strong vertical wood grain */
     repeating-linear-gradient(
       0deg,
       transparent,
+      transparent 0.5px,
+      rgba(0,0,0,0.15) 0.5px,
+      rgba(0,0,0,0.15) 1px,
       transparent 1px,
-      rgba(0,0,0,0.08) 1px,
+      transparent 1.5px,
+      rgba(0,0,0,0.08) 1.5px,
       rgba(0,0,0,0.08) 2px
     ),
-    /* Subtle horizontal planks */
+    /* Horizontal plank separation lines - very visible */
     repeating-linear-gradient(
       90deg,
       transparent,
-      transparent 40px,
-      rgba(0,0,0,0.15) 40px,
-      rgba(0,0,0,0.15) 44px,
-      rgba(255,255,255,0.05) 44px,
-      rgba(255,255,255,0.05) 45px
+      transparent 18%,
+      rgba(0,0,0,0.4) 18%,
+      rgba(0,0,0,0.4) 18.5%,
+      rgba(255,255,255,0.1) 18.5%,
+      rgba(255,255,255,0.1) 19%
     );
   pointer-events: none;
   z-index: 1;
 }
 
-/* Wood knots, scratches and natural imperfections */
+/* Heavy wood knots, scratches and weathering */
 .wooden-box::after {
   content: '';
   position: absolute;
@@ -341,16 +368,19 @@ h3 {
   left: 0;
   right: 0;
   bottom: 0;
-  border-radius: var(--radius-sm);
+  border-radius: 2px;
   background: 
-    /* Wood knots */
-    radial-gradient(ellipse at 20% 25%, rgba(0,0,0,0.3) 0%, transparent 4%),
-    radial-gradient(ellipse at 85% 60%, rgba(0,0,0,0.25) 0%, transparent 3%),
-    radial-gradient(ellipse at 45% 80%, rgba(0,0,0,0.2) 0%, transparent 2.5%),
-    radial-gradient(ellipse at 70% 15%, rgba(0,0,0,0.15) 0%, transparent 2%),
-    /* Scratches and wear */
-    linear-gradient(85deg, transparent 30%, rgba(0,0,0,0.1) 30.5%, transparent 31%),
-    linear-gradient(92deg, transparent 55%, rgba(255,255,255,0.05) 55.5%, transparent 56%);
+    /* Large prominent wood knots */
+    radial-gradient(ellipse 30px 25px at 15% 12%, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.3) 30%, transparent 50%),
+    radial-gradient(ellipse 25px 20px at 85% 65%, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.25) 30%, transparent 50%),
+    radial-gradient(ellipse 20px 18px at 45% 85%, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.2) 30%, transparent 50%),
+    radial-gradient(ellipse 18px 15px at 70% 25%, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.15) 30%, transparent 50%),
+    radial-gradient(ellipse 22px 18px at 30% 55%, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0.18) 30%, transparent 50%),
+    /* Long scratches and wear marks */
+    linear-gradient(88deg, transparent 25%, rgba(0,0,0,0.15) 25.2%, transparent 25.5%),
+    linear-gradient(85deg, transparent 48%, rgba(0,0,0,0.12) 48.2%, transparent 48.5%),
+    linear-gradient(92deg, transparent 65%, rgba(255,255,255,0.08) 65.2%, transparent 65.5%),
+    linear-gradient(87deg, transparent 78%, rgba(0,0,0,0.1) 78.2%, transparent 78.5%);
   pointer-events: none;
   z-index: 1;
 }
@@ -362,25 +392,38 @@ h3 {
 }
 
 .wooden-box:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   box-shadow: 
-    0 16px 32px rgba(0,0,0,0.8),
-    inset 0 2px 0 rgba(255,255,255,0.2),
-    inset 0 -2px 0 rgba(0,0,0,0.6),
-    inset -4px 0 12px rgba(0,0,0,0.4),
-    inset 4px 0 12px rgba(0,0,0,0.4);
+    0 20px 40px rgba(0,0,0,0.85),
+    inset 0 3px 0 rgba(255,255,255,0.25),
+    inset 0 -3px 0 rgba(0,0,0,0.7),
+    inset -6px 0 16px rgba(0,0,0,0.5),
+    inset 6px 0 16px rgba(0,0,0,0.5),
+    -8px 0 16px rgba(0,0,0,0.4),
+    8px 0 16px rgba(0,0,0,0.4);
 }
 
 /* Variation: Light wooden box */
 .wooden-box-light {
   background: 
     linear-gradient(180deg, 
-      var(--wood-highlight) 0%, 
-      var(--wood-light) 20%,
-      var(--wood-medium) 40%,
-      var(--wood-light) 60%,
-      var(--wood-highlight) 80%,
-      var(--wood-light) 100%
+      #c9a876 0%, 
+      #c9a876 18%,
+      transparent 18%, transparent 19%,
+      #b89968 19%,
+      #b89968 37%,
+      transparent 37%, transparent 38%,
+      #d4b896 38%,
+      #d4b896 56%,
+      transparent 56%, transparent 57%,
+      #b89968 57%,
+      #b89968 75%,
+      transparent 75%, transparent 76%,
+      #c9a876 76%,
+      #c9a876 94%,
+      transparent 94%, transparent 95%,
+      #b89968 95%,
+      #b89968 100%
     );
   border-color: 
     #e5d0b8
@@ -393,12 +436,23 @@ h3 {
 .wooden-box-dark {
   background: 
     linear-gradient(180deg, 
-      var(--wood-dark) 0%, 
-      var(--wood-darker) 20%,
-      var(--wood-border) 40%,
-      var(--wood-darker) 60%,
-      var(--wood-dark) 80%,
-      var(--wood-darker) 100%
+      #6b5639 0%, 
+      #6b5639 18%,
+      transparent 18%, transparent 19%,
+      #5a4730 19%,
+      #5a4730 37%,
+      transparent 37%, transparent 38%,
+      #6b5639 38%,
+      #6b5639 56%,
+      transparent 56%, transparent 57%,
+      #4a3827 57%,
+      #4a3827 75%,
+      transparent 75%, transparent 76%,
+      #5a4730 76%,
+      #5a4730 94%,
+      transparent 94%, transparent 95%,
+      #4a3827 95%,
+      #4a3827 100%
     );
   border-color: 
     var(--wood-medium) 
