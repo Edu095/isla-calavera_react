@@ -12,10 +12,10 @@ export function ClothFlag({ onReset, showResetButton }) {
     // Scene setup
     const scene = new THREE.Scene();
     const width = containerRef.current.clientWidth;
-    const height = 300;
+    const height = 400; // Increased from 300
     
     const camera = new THREE.PerspectiveCamera(60, width / height, 1, 1000);
-    camera.position.set(0, 0, 50);
+    camera.position.set(0, 0, 60); // Moved camera back for larger flag
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     const renderer = new THREE.WebGLRenderer({ 
@@ -34,9 +34,9 @@ export function ClothFlag({ onReset, showResetButton }) {
     const ambientLight = new THREE.AmbientLight(0x999999);
     scene.add(ambientLight);
 
-    // Flag geometry
-    const flagWidth = 40;
-    const flagHeight = 25;
+    // Flag geometry - Larger flag
+    const flagWidth = 50; // Increased from 40
+    const flagHeight = 32; // Increased from 25
     const segmentsW = 40;
     const segmentsH = 25;
 
@@ -86,12 +86,12 @@ export function ClothFlag({ onReset, showResetButton }) {
 
     sceneRef.current = { scene, camera, renderer, flag, geometry };
 
-    // Wave animation parameters
+    // Wave animation parameters - Adjusted for slower, fewer waves
     const waveParams = {
-      horizontal: 0.5,  // Horizontal wave frequency
-      vertical: 0.3,    // Vertical wave frequency
-      swing: 0.25,      // Wave amplitude
-      speed: 0.5        // Animation speed
+      horizontal: 0.25,  // Reduced from 0.5 - fewer horizontal waves
+      vertical: 0.3,     // Keep same
+      swing: 0.25,       // Keep same amplitude
+      speed: 0.3         // Reduced from 0.5 - slower animation
     };
 
     // Store original vertex positions
@@ -170,7 +170,7 @@ export function ClothFlag({ onReset, showResetButton }) {
         ref={containerRef}
         style={{
           width: '100%',
-          height: '300px',
+          height: '400px',
           display: 'block'
         }}
       />
