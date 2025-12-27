@@ -8,6 +8,7 @@ import { Turn } from './screens/Turn.jsx';
 import { SkullIsland } from './screens/SkullIsland.jsx';
 import { Finished } from './screens/Finished.jsx';
 import { Scoreboard } from './components/Scoreboard.jsx';
+import { ClothFlag } from './components/ClothFlag.jsx';
 import { Tests } from './screens/Tests.jsx';
 
 export default function App(){
@@ -31,6 +32,7 @@ export default function App(){
   
   const showScoreboard = ['turn', 'skullIsland'].includes(state.screen);
   const showHeader = state.screen !== 'finished';
+  const showResetButton = state.screen !== 'setup' && state.screen !== 'tests' && state.screen !== 'names';
 
   // Finished screen renders its own container
   if (state.screen === 'finished') {
@@ -45,23 +47,7 @@ export default function App(){
     <div className="appFrame">
       <div className="container">
         {showHeader && (
-          <header className="pirate-flag-header">
-            <div className="pirate-flag">
-              <div className="flag-content">
-                <div className="skull-icon">☠️</div>
-                <h1 className="flag-title">Isla Calavera</h1>
-              </div>
-              {state.screen !== 'setup' && state.screen !== 'tests' && state.screen !== 'names' && (
-                <button
-                  className="btn btn-danger flag-reset-btn"
-                  onClick={reset}
-                  title="Empezar una nueva partida desde cero"
-                >
-                  🔄 Nueva Partida
-                </button>
-              )}
-            </div>
-          </header>
+          <ClothFlag onReset={reset} showResetButton={showResetButton} />
         )}
 
         <div style={{ height: 24 }} />
