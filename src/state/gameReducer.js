@@ -90,6 +90,22 @@ export function gameReducer(state, action){
       return startTurn(next);
     }
 
+    case 'RESET_TURN': {
+      // Reset only the current turn data, keeping all game state
+      const dice = initDiceCounts();
+      const fortune = 'none';
+      const chest = initDiceCounts();
+      return {
+        ...state,
+        turn: {
+          fortune,
+          dice,
+          chest,
+          computed: computeTurn(state.mode, fortune, dice),
+        },
+      };
+    }
+
     case 'TURN_SET_FORTUNE': {
       const fortune = action.fortune;
       const dice = initDiceCounts();
