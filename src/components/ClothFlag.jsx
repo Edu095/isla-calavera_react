@@ -26,12 +26,12 @@ export function ClothFlag({ onReset, showResetButton }) {
     renderer.setClearColor(0x000000, 0);
     containerRef.current.appendChild(renderer.domElement);
 
-    // Lighting - Reduced for darker blacks
-    const light = new THREE.DirectionalLight(0xffffff, 0.9); // Reduced from 1.3
+    // Lighting
+    const light = new THREE.DirectionalLight(0xffffff, 1);
     light.position.set(10, 50, 100);
     scene.add(light);
 
-    const ambientLight = new THREE.AmbientLight(0x666666); // Much darker from 0xcccccc
+    const ambientLight = new THREE.AmbientLight(0x999999);
     scene.add(ambientLight);
 
     // Flag geometry
@@ -57,45 +57,8 @@ export function ClothFlag({ onReset, showResetButton }) {
           '/flag-title.png',
           (loadedTexture) => {
             console.log('Flag image loaded successfully');
-            
-            // Apply subtle contrast enhancement for deeper blacks
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const img = loadedTexture.image;
-            
-            canvas.width = img.width;
-            canvas.height = img.height;
-            
-            // Draw original image
-            ctx.drawImage(img, 0, 0);
-            
-            // Get image data
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const data = imageData.data;
-            
-            // Apply contrast adjustment - moderate for deeper blacks
-            const contrast = 1.15; // Reduced from 1.3 for less extreme effect
-            const brightness = -10; // Slightly darker overall
-            const factor = (259 * (contrast * 255 + 255)) / (255 * (259 - contrast * 255));
-            
-            for (let i = 0; i < data.length; i += 4) {
-              // Apply contrast and brightness to RGB channels
-              data[i] = factor * (data[i] - 128) + 128 + brightness;     // Red
-              data[i + 1] = factor * (data[i + 1] - 128) + 128 + brightness; // Green
-              data[i + 2] = factor * (data[i + 2] - 128) + 128 + brightness; // Blue
-              
-              // Clamp values to 0-255
-              data[i] = Math.max(0, Math.min(255, data[i]));
-              data[i + 1] = Math.max(0, Math.min(255, data[i + 1]));
-              data[i + 2] = Math.max(0, Math.min(255, data[i + 2]));
-            }
-            
-            // Put modified data back
-            ctx.putImageData(imageData, 0, 0);
-            
-            // Create texture from modified canvas
-            const enhancedTexture = new THREE.CanvasTexture(canvas);
-            resolve(enhancedTexture);
+            // Use original texture without any processing
+            resolve(loadedTexture);
           },
           undefined,
           (error) => {
@@ -139,7 +102,6 @@ export function ClothFlag({ onReset, showResetButton }) {
         transparent: true,
         alphaTest: 0.1,
         opacity: 1
-        // Removed emissive properties for darker appearance
       });
 
       const flag = new THREE.Mesh(geometry, material);
