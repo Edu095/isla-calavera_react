@@ -3,10 +3,10 @@ import { DICE_TYPES, FORTUNE, CHEST_ALLOWED } from '../engine/constants.js';
 export function Turn({ state, dispatch }){
   const c = state.turn.computed;
   const confirmEnabled = c?.canConfirm;
+  const canSelectDice = state.turn.fortune !== 'none';
 
   const resetTurn = () => {
     if (window.confirm('¿Reiniciar el turno actual? Se borrarán los dados y la carta seleccionados.')) {
-      // Reset only turn data
       dispatch({ type: 'RESET_TURN' });
     }
   };
@@ -31,20 +31,37 @@ export function Turn({ state, dispatch }){
         <div style={{
           marginTop: '16px',
           padding: '20px',
-          background: 'linear-gradient(135deg, rgba(91,180,217,0.2) 0%, rgba(165,216,232,0.1) 100%)',
+          background: state.turn.fortune === 'none' 
+            ? 'linear-gradient(135deg, rgba(150,150,150,0.2) 0%, rgba(100,100,100,0.1) 100%)'
+            : 'linear-gradient(135deg, rgba(91,180,217,0.2) 0%, rgba(165,216,232,0.1) 100%)',
           borderRadius: 'var(--radius-md)',
-          border: '2px solid var(--accent-blue)',
+          border: state.turn.fortune === 'none' ? '2px solid rgba(150,150,150,0.5)' : '2px solid var(--accent-blue)',
           textAlign: 'center'
         }}>
-          <div style={{ fontSize: '3rem', marginBottom: '8px' }}>🎴</div>
+          <div style={{ fontSize: '3rem', marginBottom: '8px' }}>
+            {state.turn.fortune === 'none' ? '⚠️' : '🎴'}
+          </div>
           <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-dark)' }}>
             {FORTUNE.find(f => f.key === state.turn.fortune)?.label || 'Sin carta'}
           </div>
         </div>
+
+        {state.turn.fortune === 'none' && (
+          <div className="notice warning" style={{ marginTop: '16px' }}>
+            <b>⚠️ Selecciona una carta de acción</b>
+            <div className="small" style={{ marginTop: '4px' }}>
+              Debes elegir una carta antes de seleccionar los dados.
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Dice Selection */}
-      <div className="card slide-in" style={{ animationDelay: '0.1s' }}>
+      <div className="card slide-in" style={{ 
+        animationDelay: '0.1s',
+        opacity: canSelectDice ? 1 : 0.5,
+        pointerEvents: canSelectDice ? 'auto' : 'none'
+      }}>
         <h2>🎲 Selecciona los Dados (máx. 8)</h2>
         <div className="small muted" style={{ marginBottom: '16px' }}>
           Ajusta la cantidad de cada tipo de dado que has obtenido en tu tirada.
@@ -100,6 +117,7 @@ export function Turn({ state, dispatch }){
                     className="mini" 
                     onClick={() => dispatch({ type: 'TURN_ADJUST_DIE', key: t.key, delta: -1 })}
                     style={{ background: val === 0 ? 'rgba(255,255,255,0.1)' : 'var(--accent-blue)' }}
+                    disabled={!canSelectDice}
                   >
                     −
                   </button>
@@ -115,6 +133,7 @@ export function Turn({ state, dispatch }){
                   <button 
                     className="mini" 
                     onClick={() => dispatch({ type: 'TURN_ADJUST_DIE', key: t.key, delta: +1 })}
+                    disabled={!canSelectDice}
                   >
                     +
                   </button>
@@ -124,6 +143,9 @@ export function Turn({ state, dispatch }){
           })}
         </div>
       </div>
+
+      {/* Chest UI (only for Botín card) - MOVED HERE */}
+      {state.turn.fortune === 'chest' && <ChestUI state={state} dispatch={dispatch} />}
 
       {/* Score Summary */}
       <div className={`card slide-in ${c?.bust ? 'card-transparent' : ''}`} 
@@ -218,9 +240,6 @@ export function Turn({ state, dispatch }){
           </button>
         </div>
       </div>
-
-      {/* Chest UI (only for Botín card) */}
-      {state.turn.fortune === 'chest' && <ChestUI state={state} dispatch={dispatch} />}
     </div>
   );
 }
@@ -231,7 +250,7 @@ function ChestUI({ state, dispatch }){
   const totalChest = CHEST_ALLOWED.reduce((a,k) => a + (chest[k] || 0), 0);
 
   return (
-    <div className="card card-dark slide-in" style={{ animationDelay: '0.3s' }}>
+    <div className="card card-dark slide-in" style={{ animationDelay: '0.15s' }}>
       <h2 style={{ color: 'var(--text-primary)' }}>📦 Cofre del Botín</h2>
       <div className="small" style={{ color: 'var(--text-muted)', marginBottom: '16px' }}>
         Marca qué dados estaban <b>guardados antes</b> de sacar la 3ª calavera. 
