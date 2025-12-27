@@ -20,7 +20,7 @@ export function Scoreboard({ state }){
   const isSuddenDeath = round >= 14;
 
   return (
-    <div className="card card-dark fade-in" style={{ marginBottom: '24px' }}>
+    <div className="wooden-box wooden-box-dark fade-in" style={{ marginBottom: '24px' }}>
       {/* Header */}
       <div style={{ 
         display: 'flex', 
