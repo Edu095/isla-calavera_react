@@ -33,6 +33,13 @@
   --wood-border: #2d2415;       /* Borde madera */
   --wood-highlight: #b89970;    /* Resalte madera */
   
+  /* Sunset & Ocean colors */
+  --sky-top: #ff6b35;           /* Naranja atardecer arriba */
+  --sky-mid: #f7931e;           /* Naranja medio */
+  --sky-horizon: #ffd166;       /* Amarillo horizonte */
+  --ocean-top: #2a6f97;         /* Azul mar arriba */
+  --ocean-deep: #014f86;        /* Azul mar profundo */
+  
   /* Spacing */
   --spacing-xs: 4px;
   --spacing-sm: 8px;
@@ -69,7 +76,16 @@
 
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  /* Sunset sky transitioning to ocean */
+  background: linear-gradient(
+    180deg,
+    var(--sky-top) 0%,
+    var(--sky-mid) 20%,
+    var(--sky-horizon) 40%,
+    var(--ocean-top) 60%,
+    var(--ocean-deep) 100%
+  );
+  background-attachment: fixed;
   color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
@@ -83,9 +99,10 @@ body {
   display: flex;
   justify-content: center;
   align-items: flex-start;
+  /* Subtle overlay effects */
   background: 
-    radial-gradient(circle at 20% 30%, rgba(212,175,55,0.05) 0%, transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(199,62,29,0.05) 0%, transparent 50%);
+    radial-gradient(circle at 30% 20%, rgba(255,107,53,0.15) 0%, transparent 40%),
+    radial-gradient(circle at 70% 80%, rgba(1,79,134,0.2) 0%, transparent 50%);
 }
 
 .container {
