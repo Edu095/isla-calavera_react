@@ -1,8 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export function ClothFlag({ onReset, showResetButton }) {
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -33,18 +34,15 @@ export function ClothFlag({ onReset, showResetButton }) {
       update(deltaTime) {
         if (this.pinned) return;
 
-        const friction = 0.995; // Higher = less friction
+        const friction = 0.995;
         const velX = (this.x - this.oldX) * friction;
         const velY = (this.y - this.oldY) * friction;
 
         this.oldX = this.x;
         this.oldY = this.y;
 
-        // Apply velocity
         this.x += velX;
         this.y += velY;
-
-        // Very light gravity
         this.y += 0.1 * deltaTime;
       }
 
@@ -84,7 +82,7 @@ export function ClothFlag({ onReset, showResetButton }) {
       }
     }
 
-    // Create cloth - HORIZONTAL orientation
+    // Create cloth
     const rect = canvas.getBoundingClientRect();
     const cols = 35;
     const rows = 14;
@@ -99,46 +97,37 @@ export function ClothFlag({ onReset, showResetButton }) {
     const points = [];
     const sticks = [];
 
-    // Create points grid
     for (let y = 0; y < rows; y++) {
       for (let x = 0; x < cols; x++) {
-        // Pin left edge
         const pinned = x === 0;
         points.push(new Point(startX + x * spacing, startY + y * spacingY, pinned));
       }
     }
 
-    // Create constraints
     for (let y = 0; y < rows; y++) {
       for (let x = 0; x < cols; x++) {
         const i = y * cols + x;
         
-        // Horizontal
         if (x < cols - 1) {
           sticks.push(new Stick(points[i], points[i + 1]));
         }
         
-        // Vertical
         if (y < rows - 1) {
           sticks.push(new Stick(points[i], points[i + cols]));
         }
       }
     }
 
-    // Wind force simulation
+    // Wind force
     const applyWind = (time) => {
       points.forEach((p, index) => {
         if (p.pinned) return;
         
         const col = index % cols;
-        const row = Math.floor(index / cols);
-        
-        // Horizontal wave from left to right
         const waveOffset = col * 0.15;
         const verticalWave = Math.sin(time * 2 + waveOffset) * 0.8;
         const horizontalWave = Math.cos(time * 1.5 + waveOffset) * 0.4;
         
-        // Apply wind force
         p.y += verticalWave;
         p.x += horizontalWave;
       });
@@ -147,7 +136,7 @@ export function ClothFlag({ onReset, showResetButton }) {
     // Mouse interaction
     let mouseX = -1000;
     let mouseY = -1000;
-    let isDragging = false;
+    let dragging = false;
 
     const getMousePos = (e) => {
       const rect = canvas.getBoundingClientRect();
@@ -158,11 +147,12 @@ export function ClothFlag({ onReset, showResetButton }) {
     };
 
     const handleMouseDown = (e) => {
-      isDragging = true;
+      dragging = true;
+      setIsDragging(true);
       const pos = getMousePos(e);
       mouseX = pos.x;
       mouseY = pos.y;
-      e.preventDefault();
+      if (e.cancelable) e.preventDefault();
     };
 
     const handleMouseMove = (e) => {
@@ -170,7 +160,7 @@ export function ClothFlag({ onReset, showResetButton }) {
       mouseX = pos.x;
       mouseY = pos.y;
 
-      if (isDragging) {
+      if (dragging) {
         points.forEach(p => {
           if (p.pinned) return;
           const dx = mouseX - p.x;
@@ -187,7 +177,8 @@ export function ClothFlag({ onReset, showResetButton }) {
     };
 
     const handleMouseUp = () => {
-      isDragging = false;
+      dragging = false;
+      setIsDragging(false);
     };
 
     canvas.addEventListener('mousedown', handleMouseDown);
@@ -202,25 +193,21 @@ export function ClothFlag({ onReset, showResetButton }) {
     let lastTime = performance.now();
 
     const animate = (currentTime) => {
-      const deltaTime = Math.min((currentTime - lastTime) / 16.67, 2); // Cap at 2x speed
+      const deltaTime = Math.min((currentTime - lastTime) / 16.67, 2);
       lastTime = currentTime;
 
       const rect = canvas.getBoundingClientRect();
       ctx.clearRect(0, 0, rect.width, rect.height);
 
-      // Apply wind
       applyWind(currentTime * 0.001);
 
-      // Update physics (multiple iterations for stability)
       for (let iteration = 0; iteration < 4; iteration++) {
         points.forEach(p => p.update(deltaTime));
         sticks.forEach(s => s.update());
       }
 
-      // Draw cloth - smooth black
       ctx.fillStyle = '#000000';
 
-      // Draw filled triangles
       for (let y = 0; y < rows - 1; y++) {
         for (let x = 0; x < cols - 1; x++) {
           const i = y * cols + x;
@@ -245,12 +232,10 @@ export function ClothFlag({ onReset, showResetButton }) {
         }
       }
 
-      // Draw skull and title
       const centerCol = Math.floor(cols / 2);
       const centerRow = Math.floor(rows / 2);
       const centerPoint = points[centerRow * cols + centerCol];
 
-      // Calculate rotation from nearby points
       const leftPoint = points[centerRow * cols + Math.max(0, centerCol - 3)];
       const rightPoint = points[centerRow * cols + Math.min(cols - 1, centerCol + 3)];
       const angle = Math.atan2(rightPoint.y - leftPoint.y, rightPoint.x - leftPoint.x);
@@ -286,7 +271,6 @@ export function ClothFlag({ onReset, showResetButton }) {
 
     animationRef.current = requestAnimationFrame(animate);
 
-    // Cleanup
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
