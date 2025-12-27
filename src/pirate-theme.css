@@ -74,23 +74,6 @@
   padding: 0;
 }
 
-/* Fix iOS white background issue */
-html {
-  /* Sunset sky transitioning to ocean */
-  background: linear-gradient(
-    180deg,
-    var(--sky-top) 0%,
-    var(--sky-mid) 20%,
-    var(--sky-horizon) 40%,
-    var(--ocean-top) 60%,
-    var(--ocean-deep) 100%
-  );
-  background-attachment: fixed;
-  min-height: 100vh;
-  /* iOS safe area support */
-  min-height: -webkit-fill-available;
-}
-
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   /* Sunset sky transitioning to ocean */
@@ -106,21 +89,14 @@ body {
   color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
-  /* iOS safe area support */
-  min-height: -webkit-fill-available;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   /* Add text shadow for better readability on colorful background */
   text-shadow: 0 1px 3px rgba(0,0,0,0.3);
-  /* Prevent overscroll showing white */
-  overscroll-behavior: none;
-  /* iOS safe area padding */
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .appFrame {
   min-height: 100vh;
-  /* iOS safe area support */
-  min-height: -webkit-fill-available;
   padding: var(--spacing-lg);
   display: flex;
   justify-content: center;
