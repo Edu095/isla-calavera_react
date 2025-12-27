@@ -44,7 +44,7 @@ export default function App(){
             <div className="topbarRow">
               <div>
                 <h1 className="brandTitle">🏴‍☠️ Isla Calavera 💀</h1>
-                <div className="subtitle">Contador digital de puntuación para 2–5 piratas</div>
+                <div className="subtitle">¡Arrrrg grumete!</div>
               </div>
 
               <div className="headerActions">
