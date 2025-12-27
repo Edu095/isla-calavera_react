@@ -12,10 +12,10 @@ export function ClothFlag({ onReset, showResetButton }) {
     // Scene setup
     const scene = new THREE.Scene();
     const width = containerRef.current.clientWidth;
-    const height = 400; // Increased from 300
+    const height = 400;
     
     const camera = new THREE.PerspectiveCamera(60, width / height, 1, 1000);
-    camera.position.set(0, 0, 60); // Moved camera back for larger flag
+    camera.position.set(0, 0, 60);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     const renderer = new THREE.WebGLRenderer({ 
@@ -34,9 +34,9 @@ export function ClothFlag({ onReset, showResetButton }) {
     const ambientLight = new THREE.AmbientLight(0x999999);
     scene.add(ambientLight);
 
-    // Flag geometry - Larger flag
-    const flagWidth = 50; // Increased from 40
-    const flagHeight = 32; // Increased from 25
+    // Flag geometry
+    const flagWidth = 50;
+    const flagHeight = 32;
     const segmentsW = 40;
     const segmentsH = 25;
 
@@ -86,12 +86,12 @@ export function ClothFlag({ onReset, showResetButton }) {
 
     sceneRef.current = { scene, camera, renderer, flag, geometry };
 
-    // Wave animation parameters - Adjusted for slower, fewer waves
+    // Wave animation parameters
     const waveParams = {
-      horizontal: 0.25,  // Reduced from 0.5 - fewer horizontal waves
-      vertical: 0.3,     // Keep same
-      swing: 0.25,       // Keep same amplitude
-      speed: 0.3         // Reduced from 0.5 - slower animation
+      horizontal: 0.25,
+      vertical: 0.3,
+      swing: 0.25,
+      speed: 0.3
     };
 
     // Store original vertex positions
@@ -114,10 +114,16 @@ export function ClothFlag({ onReset, showResetButton }) {
           const index = x + y * (segmentsW + 1);
           const original = originalPositions[index];
           
-          // Calculate wave
+          // Calculate wave - REMOVED the x/4 multiplier to allow left edge to move
           const waveX = waveParams.horizontal * x;
           const waveY = waveParams.vertical * y;
-          const z = Math.sin(waveX + waveY - time) * waveParams.swing * x / 4;
+          
+          // Base wave calculation
+          const baseWave = Math.sin(waveX + waveY - time) * waveParams.swing;
+          
+          // Apply progressive amplitude (still increases from left to right but left moves too)
+          const progressiveAmplitude = 0.3 + (x / segmentsW) * 0.7; // 30% at left, 100% at right
+          const z = baseWave * progressiveAmplitude;
           
           // Update vertex position
           geometry.attributes.position.setZ(index, z);
