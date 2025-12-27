@@ -87,62 +87,36 @@ body {
 }
 
 /* ============================================
-   PIRATE FLAG HEADER
+   PIRATE FLAG HEADER - FABRIC EFFECT
    ============================================ */
 
 .pirate-flag-header {
   position: relative;
   margin-bottom: var(--spacing-xl);
-  display: flex;
-  align-items: flex-start;
-  gap: 0;
-}
-
-.flag-pole {
-  width: 12px;
-  height: 180px;
-  background: linear-gradient(180deg, #4a3828 0%, #2d2318 100%);
-  border-radius: 6px;
-  box-shadow: inset -2px 0 4px rgba(0,0,0,0.5), 2px 0 8px rgba(0,0,0,0.3);
-  position: relative;
-  z-index: 1;
-  flex-shrink: 0;
-}
-
-.flag-pole::before {
-  content: '';
-  position: absolute;
-  top: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 20px;
-  height: 20px;
-  background: var(--accent-gold);
-  border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(212,175,55,0.6);
+  perspective: 1000px;
 }
 
 .pirate-flag {
   position: relative;
   background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
-  padding: var(--spacing-lg) var(--spacing-xl);
-  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
   box-shadow: 
-    0 8px 32px rgba(0,0,0,0.6),
-    inset 0 1px 0 rgba(255,255,255,0.1);
-  min-height: 140px;
+    0 12px 40px rgba(0,0,0,0.7),
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    inset 0 -1px 0 rgba(0,0,0,0.5);
+  min-height: 160px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: var(--spacing-md);
-  flex: 1;
-  animation: wave 3s ease-in-out infinite;
-  transform-origin: left center;
   border: 3px solid #2a2a2a;
-  border-left: none;
+  overflow: hidden;
+  animation: fabric-wave 4s ease-in-out infinite;
 }
 
+/* Fabric texture overlay */
 .pirate-flag::before {
   content: '';
   position: absolute;
@@ -152,14 +126,37 @@ body {
   bottom: 0;
   background: 
     repeating-linear-gradient(
-      45deg,
+      90deg,
       transparent,
-      transparent 10px,
-      rgba(255,255,255,0.02) 10px,
-      rgba(255,255,255,0.02) 20px
+      transparent 2px,
+      rgba(255,255,255,0.01) 2px,
+      rgba(255,255,255,0.01) 4px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(255,255,255,0.01) 2px,
+      rgba(255,255,255,0.01) 4px
     );
   pointer-events: none;
-  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  opacity: 0.5;
+}
+
+/* Fabric folds/wrinkles effect */
+.pirate-flag::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(ellipse at 20% 30%, rgba(255,255,255,0.08) 0%, transparent 40%),
+    radial-gradient(ellipse at 70% 60%, rgba(0,0,0,0.15) 0%, transparent 40%),
+    radial-gradient(ellipse at 40% 80%, rgba(255,255,255,0.05) 0%, transparent 40%);
+  pointer-events: none;
+  animation: fabric-shimmer 5s ease-in-out infinite;
 }
 
 .flag-content {
@@ -171,41 +168,44 @@ body {
 }
 
 .skull-icon {
-  font-size: 4rem;
-  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.8));
-  animation: skull-float 3s ease-in-out infinite;
+  font-size: 4.5rem;
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.9));
+  animation: skull-float 4s ease-in-out infinite;
 }
 
 .flag-title {
   font-family: 'Pirata One', cursive;
-  font-size: 3rem;
+  font-size: 3.5rem;
   font-weight: 400;
   margin: 0;
   background: linear-gradient(135deg, var(--accent-gold) 0%, #ffffff 50%, var(--accent-gold) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-shadow: 0 2px 20px rgba(212,175,55,0.5);
-  letter-spacing: 3px;
+  filter: drop-shadow(0 2px 20px rgba(212,175,55,0.6));
+  letter-spacing: 4px;
   text-align: center;
   position: relative;
+  animation: title-sway 4s ease-in-out infinite;
 }
 
 .flag-title::after {
   content: '';
   position: absolute;
-  bottom: -8px;
+  bottom: -12px;
   left: 50%;
   transform: translateX(-50%);
-  width: 60%;
-  height: 2px;
+  width: 70%;
+  height: 3px;
   background: linear-gradient(90deg, transparent 0%, var(--accent-gold) 50%, transparent 100%);
+  box-shadow: 0 0 8px var(--accent-gold);
 }
 
 .flag-reset-btn {
   z-index: 1;
   font-size: 0.9rem;
-  padding: 8px 16px;
+  padding: 10px 20px;
+  margin-top: var(--spacing-sm);
 }
 
 /* ============================================
@@ -609,15 +609,15 @@ label {
 
 @media (max-width: 768px) {
   .flag-title {
-    font-size: 2rem;
+    font-size: 2.2rem;
   }
   
   .skull-icon {
-    font-size: 3rem;
+    font-size: 3.5rem;
   }
   
   .pirate-flag {
-    padding: var(--spacing-md);
+    padding: var(--spacing-lg);
   }
   
   .topbarRow {
@@ -676,27 +676,95 @@ label {
   }
 }
 
-@keyframes wave {
+/* Fabric wave animation - realistic cloth movement */
+@keyframes fabric-wave {
   0%, 100% {
-    transform: rotate(0deg) translateX(0);
+    transform: 
+      perspective(1000px)
+      rotateX(0deg) 
+      rotateY(0deg)
+      scaleX(1);
+    box-shadow: 
+      0 12px 40px rgba(0,0,0,0.7),
+      inset 0 1px 0 rgba(255,255,255,0.1);
   }
   25% {
-    transform: rotate(-1deg) translateX(-2px);
+    transform: 
+      perspective(1000px)
+      rotateX(1deg) 
+      rotateY(-2deg)
+      scaleX(0.98);
+    box-shadow: 
+      -5px 12px 40px rgba(0,0,0,0.7),
+      inset 2px 1px 0 rgba(255,255,255,0.12);
   }
   50% {
-    transform: rotate(0deg) translateX(0);
+    transform: 
+      perspective(1000px)
+      rotateX(-1deg) 
+      rotateY(0deg)
+      scaleX(1);
+    box-shadow: 
+      0 15px 45px rgba(0,0,0,0.75),
+      inset 0 -1px 0 rgba(0,0,0,0.3);
   }
   75% {
-    transform: rotate(1deg) translateX(2px);
+    transform: 
+      perspective(1000px)
+      rotateX(1deg) 
+      rotateY(2deg)
+      scaleX(0.98);
+    box-shadow: 
+      5px 12px 40px rgba(0,0,0,0.7),
+      inset -2px 1px 0 rgba(255,255,255,0.12);
   }
 }
 
+/* Fabric shimmer for realistic light reflection */
+@keyframes fabric-shimmer {
+  0%, 100% {
+    opacity: 0.5;
+    transform: translateX(0) scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translateX(10px) scale(1.05);
+  }
+}
+
+/* Skull floating with more natural movement */
 @keyframes skull-float {
   0%, 100% {
     transform: translateY(0) rotate(0deg);
+    filter: drop-shadow(0 4px 16px rgba(0,0,0,0.9));
+  }
+  25% {
+    transform: translateY(-6px) rotate(-2deg);
+    filter: drop-shadow(0 6px 18px rgba(0,0,0,0.85));
   }
   50% {
-    transform: translateY(-8px) rotate(3deg);
+    transform: translateY(-10px) rotate(0deg);
+    filter: drop-shadow(0 8px 20px rgba(0,0,0,0.8));
+  }
+  75% {
+    transform: translateY(-6px) rotate(2deg);
+    filter: drop-shadow(0 6px 18px rgba(0,0,0,0.85));
+  }
+}
+
+/* Title sway synchronized with fabric */
+@keyframes title-sway {
+  0%, 100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(-3px) rotate(-0.5deg);
+  }
+  50% {
+    transform: translateX(0) rotate(0deg);
+  }
+  75% {
+    transform: translateX(3px) rotate(0.5deg);
   }
 }
 
