@@ -1,0 +1,109 @@
+:root{
+    --bg1:#0f0f23; --bg2:#16213e; --bg3:#1a1a2e;
+    --card:rgba(255,255,255,.10) !important;
+    --b:rgba(255,255,255,.18) !important;
+    --gold:#ffd700 !important;
+    --orange:#ff6b35 !important;
+    --good:#00cc6a !important;
+    --bad:#ff4444 !important;
+    --txt:#f0f0f0 !important;
+    --muted:#b0b0b0 !important;
+  }
+  
+  * { box-sizing: border-box !important; margin: 0 !important; padding: 0 !important; }
+  
+  body {
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
+    min-height: 100vh !important;
+    background: linear-gradient(135deg, var(--bg3) 0%, var(--bg2) 50%, var(--bg1) 100%) !important;
+    color: var(--txt) !important;
+    padding: 16px !important;
+  }
+  
+  .container { max-width: 1100px !important; margin: 0 auto !important; }
+  
+  .card {
+    background: var(--card) !important;
+    border: 1px solid var(--b) !important;
+    backdrop-filter: blur(10px) !important;
+    border-radius: 14px !important;
+    padding: 14px !important;
+    box-shadow: 0 8px 22px rgba(0,0,0,.28) !important;
+  }
+  
+  .card h2 { 
+    font-size: 1.1rem !important; 
+    margin-bottom: 10px !important; 
+    color: var(--gold) !important; 
+  }
+  
+  .btn {
+    appearance: none !important; 
+    border: 0 !important; 
+    cursor: pointer !important;
+    padding: 11px 16px !important; 
+    border-radius: 999px !important;
+    font-weight: 700 !important; 
+    font-size: 1rem !important;
+    box-shadow: 0 5px 18px rgba(0,0,0,.25) !important;
+    transition: transform .12s ease, filter .12s ease !important;
+    user-select: none !important;
+    color: inherit !important;
+  }
+  .btn:active { transform: translateY(1px) !important; }
+  
+  .btn-primary { 
+    background: linear-gradient(45deg, var(--gold), #ffed4e) !important; 
+    color: #1a1a2e !important; 
+  }
+  .btn-secondary { 
+    background: linear-gradient(45deg, var(--orange), #f7931e) !important; 
+    color: #111 !important; 
+  }
+  .btn-ghost { 
+    background: rgba(255,255,255,.10) !important; 
+    color: var(--txt) !important; 
+    border: 1px solid var(--b) !important; 
+  }
+  
+  .grid { 
+    display: grid !important; 
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important; 
+    gap: 12px !important; 
+  }
+  
+  label { 
+    display: block !important; 
+    font-size: .92rem !important; 
+    color: var(--muted) !important; 
+    margin: 10px 0 6px !important; 
+  }
+  
+  input, select {
+    width: 100% !important; 
+    padding: 10px !important; 
+    border-radius: 10px !important; 
+    border: 1px solid var(--b) !important;
+    background: rgba(0,0,0,.38) !important; 
+    color: var(--txt) !important; 
+    outline: none !important;
+    font-size: inherit !important;
+  }
+  input:focus, select:focus { 
+    border-color: rgba(255,215,0,.75) !important; 
+    box-shadow: 0 0 0 2px rgba(255,215,0,.20) !important; 
+  }
+  
+  /* resto igual que antes, pero con !important en propiedades críticas */
+  .pill { 
+    display: inline-flex !important; 
+    align-items: center !important; 
+    gap: 8px !important; 
+    padding: 8px 10px !important; 
+    border-radius: 999px !important;
+    background: rgba(0,0,0,.32) !important; 
+    border: 1px solid rgba(255,255,255,.10) !important; 
+    color: var(--txt) !important; 
+    font-weight: 650 !important; 
+  }
+  
