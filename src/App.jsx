@@ -46,7 +46,6 @@ export default function App(){
       <div className="container">
         {showHeader && (
           <header className="pirate-flag-header">
-            <div className="flag-pole"></div>
             <div className="pirate-flag">
               <div className="flag-content">
                 <div className="skull-icon">☠️</div>
