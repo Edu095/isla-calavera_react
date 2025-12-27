@@ -1,4 +1,5 @@
 import { DICE_TYPES, FORTUNE, CHEST_ALLOWED } from '../engine/constants.js';
+import { FORTUNE_IMAGES, DICE_IMAGES } from '../assets/imageMap.js';
 
 export function Turn({ state, dispatch }){
   const c = state.turn.computed;
@@ -32,7 +33,7 @@ export function Turn({ state, dispatch }){
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       {/* Action Card Selection */}
       <div className="card fade-in">
-        <h2>🃏 Carta de Acción</h2>
+        <h2>🎴 Carta de Acción</h2>
         
         <select 
           value={state.turn.fortune} 
@@ -44,7 +45,7 @@ export function Turn({ state, dispatch }){
           ))}
         </select>
 
-        {/* Visual Card Display */}
+        {/* Visual Card Display with Image */}
         <div style={{
           marginTop: '16px',
           padding: '20px',
@@ -53,14 +54,44 @@ export function Turn({ state, dispatch }){
             : 'linear-gradient(135deg, rgba(91,180,217,0.2) 0%, rgba(165,216,232,0.1) 100%)',
           borderRadius: 'var(--radius-md)',
           border: state.turn.fortune === 'none' ? '2px solid rgba(150,150,150,0.5)' : '2px solid var(--accent-blue)',
-          textAlign: 'center'
+          textAlign: 'center',
+          minHeight: '200px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center'
         }}>
-          <div style={{ fontSize: '3rem', marginBottom: '8px' }}>
-            {state.turn.fortune === 'none' ? '⚠️' : '🎴'}
-          </div>
-          <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-dark)' }}>
-            {FORTUNE.find(f => f.key === state.turn.fortune)?.label || 'Sin carta'}
-          </div>
+          {state.turn.fortune === 'none' ? (
+            <>
+              <div style={{ fontSize: '3rem', marginBottom: '8px' }}>
+                ⚠️
+              </div>
+              <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-dark)' }}>
+                Sin carta seleccionada
+              </div>
+            </>
+          ) : (
+            <>
+              {FORTUNE_IMAGES[state.turn.fortune] && (
+                <img 
+                  src={FORTUNE_IMAGES[state.turn.fortune]} 
+                  alt={FORTUNE.find(f => f.key === state.turn.fortune)?.label}
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '300px',
+                    width: 'auto',
+                    height: 'auto',
+                    objectFit: 'contain',
+                    borderRadius: 'var(--radius-sm)',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+                  }}
+                />
+              )}
+              <div style={{ fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-dark)', marginTop: '12px' }}>
+                {FORTUNE.find(f => f.key === state.turn.fortune)?.label || 'Sin carta'}
+              </div>
+            </>
+          )}
         </div>
 
         {state.turn.fortune === 'none' && (
@@ -89,6 +120,7 @@ export function Turn({ state, dispatch }){
             const val = state.turn.dice[t.key] || 0;
             const isSkull = t.key === 'skull';
             const borderColor = isSkull ? 'var(--danger-red)' : 'rgba(255,255,255,0.1)';
+            const diceImage = DICE_IMAGES[t.key];
 
             return (
               <div 
@@ -108,16 +140,28 @@ export function Turn({ state, dispatch }){
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <div style={{
-                    fontSize: '2rem',
                     width: '48px',
                     height: '48px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     background: 'rgba(255,255,255,0.1)',
-                    borderRadius: 'var(--radius-sm)'
+                    borderRadius: 'var(--radius-sm)',
+                    padding: '4px'
                   }}>
-                    {t.emoji}
+                    {diceImage ? (
+                      <img 
+                        src={diceImage} 
+                        alt={t.label}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'contain'
+                        }}
+                      />
+                    ) : (
+                      <span style={{ fontSize: '2rem' }}>{t.emoji}</span>
+                    )}
                   </div>
                   <div>
                     <div style={{ fontWeight: 600, fontSize: '1.1rem', color: 'var(--text-dark)' }}>
@@ -304,6 +348,7 @@ function ChestUI({ state, dispatch }){
           const t = DICE_TYPES.find(x => x.key === k);
           const max = dice[k] || 0;
           const val = chest[k] || 0;
+          const diceImage = DICE_IMAGES[k];
 
           return (
             <div 
@@ -321,7 +366,27 @@ function ChestUI({ state, dispatch }){
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ fontSize: '1.5rem' }}>{t.emoji}</div>
+                <div style={{
+                  width: '36px',
+                  height: '36px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  {diceImage ? (
+                    <img 
+                      src={diceImage} 
+                      alt={t.label}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain'
+                      }}
+                    />
+                  ) : (
+                    <span style={{ fontSize: '1.5rem' }}>{t.emoji}</span>
+                  )}
+                </div>
                 <div>
                   <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
                     {t.label}
