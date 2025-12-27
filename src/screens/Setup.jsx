@@ -59,13 +59,20 @@ const TIPS = [
 
 export function Setup({ state, dispatch }){
   const [currentTip, setCurrentTip] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const nextTip = () => {
+    if (isAnimating) return;
+    setIsAnimating(true);
     setCurrentTip((prev) => (prev + 1) % TIPS.length);
+    setTimeout(() => setIsAnimating(false), 500);
   };
 
   const prevTip = () => {
+    if (isAnimating) return;
+    setIsAnimating(true);
     setCurrentTip((prev) => (prev - 1 + TIPS.length) % TIPS.length);
+    setTimeout(() => setIsAnimating(false), 500);
   };
 
   return (
@@ -143,63 +150,82 @@ export function Setup({ state, dispatch }){
         </div>
       </div>
 
-      {/* Tips Carousel */}
+      {/* Tips Carousel with Sliding Animation */}
       <div className="wooden-box wooden-box-dark fade-in" style={{ animationDelay: '0.1s' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
           <h2 style={{ margin: 0, color: 'var(--text-primary)' }}>📚 Guía Rápida</h2>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button className="mini" onClick={prevTip} style={{ background: 'rgba(255,255,255,0.1)' }}>←</button>
-            <button className="mini" onClick={nextTip} style={{ background: 'rgba(255,255,255,0.1)' }}>→</button>
+            <button className="mini" onClick={prevTip} disabled={isAnimating} style={{ background: 'rgba(255,255,255,0.1)' }}>←</button>
+            <button className="mini" onClick={nextTip} disabled={isAnimating} style={{ background: 'rgba(255,255,255,0.1)' }}>→</button>
           </div>
         </div>
 
+        {/* Carousel Container with Overflow Hidden */}
         <div style={{ 
-          background: 'linear-gradient(135deg, rgba(91,180,217,0.2) 0%, rgba(165,216,232,0.1) 100%)',
+          position: 'relative',
+          overflow: 'hidden',
           borderRadius: 'var(--radius-md)',
-          padding: '24px',
-          minHeight: '200px',
-          position: 'relative'
+          background: 'linear-gradient(135deg, rgba(91,180,217,0.2) 0%, rgba(165,216,232,0.1) 100%)'
         }}>
-          <div style={{ textAlign: 'center', fontSize: '3rem', marginBottom: '12px' }}>
-            {TIPS[currentTip].emoji}
-          </div>
-          <h3 style={{ textAlign: 'center', color: 'var(--text-primary)', marginBottom: '16px' }}>
-            {TIPS[currentTip].title}
-          </h3>
-          <ul style={{ 
-            listStyle: 'none', 
-            padding: 0,
-            color: 'var(--text-primary)',
-            fontSize: '0.95rem',
-            lineHeight: '1.8'
+          {/* Sliding Track */}
+          <div style={{
+            display: 'flex',
+            transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+            transform: `translateX(-${currentTip * 100}%)`
           }}>
-            {TIPS[currentTip].content.map((item, idx) => (
-              <li key={idx} style={{ marginBottom: '8px', paddingLeft: '24px', position: 'relative' }}>
-                <span style={{ position: 'absolute', left: 0 }}>•</span>
-                {item}
-              </li>
-            ))}
-          </ul>
-          
-          {/* Online Play Button */}
-          {TIPS[currentTip].hasButton && (
-            <div style={{ marginTop: '20px', textAlign: 'center' }}>
-              <a 
-                href={TIPS[currentTip].buttonUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-primary"
-                style={{ 
-                  textDecoration: 'none',
-                  display: 'inline-flex',
-                  gap: '8px',
-                  fontSize: '1rem'
+            {TIPS.map((tip, index) => (
+              <div
+                key={index}
+                style={{
+                  minWidth: '100%',
+                  padding: '24px',
+                  boxSizing: 'border-box'
                 }}
               >
-                {TIPS[currentTip].buttonText}
-              </a>
-            </div>
-          )}
+                <div style={{ textAlign: 'center', fontSize: '3rem', marginBottom: '12px' }}>
+                  {tip.emoji}
+                </div>
+                <h3 style={{ textAlign: 'center', color: 'var(--text-primary)', marginBottom: '16px' }}>
+                  {tip.title}
+                </h3>
+                <ul style={{ 
+                  listStyle: 'none', 
+                  padding: 0,
+                  color: 'var(--text-primary)',
+                  fontSize: '0.95rem',
+                  lineHeight: '1.8',
+                  minHeight: '160px'
+                }}>
+                  {tip.content.map((item, idx) => (
+                    <li key={idx} style={{ marginBottom: '8px', paddingLeft: '24px', position: 'relative' }}>
+                      <span style={{ position: 'absolute', left: 0 }}>•</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                
+                {/* Online Play Button */}
+                {tip.hasButton && (
+                  <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                    <a 
+                      href={tip.buttonUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-primary"
+                      style={{ 
+                        textDecoration: 'none',
+                        display: 'inline-flex',
+                        gap: '8px',
+                        fontSize: '1rem'
+                      }}
+                    >
+                      {tip.buttonText}
+                    </a>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Dots Navigation */}
@@ -207,15 +233,23 @@ export function Setup({ state, dispatch }){
           {TIPS.map((_, idx) => (
             <button
               key={idx}
-              onClick={() => setCurrentTip(idx)}
+              onClick={() => {
+                if (!isAnimating) {
+                  setIsAnimating(true);
+                  setCurrentTip(idx);
+                  setTimeout(() => setIsAnimating(false), 500);
+                }
+              }}
+              disabled={isAnimating}
               style={{
                 width: currentTip === idx ? '24px' : '8px',
                 height: '8px',
                 borderRadius: '4px',
                 background: currentTip === idx ? 'var(--accent-blue)' : 'rgba(255,255,255,0.3)',
                 border: 'none',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease'
+                cursor: isAnimating ? 'not-allowed' : 'pointer',
+                transition: 'all 0.3s ease',
+                opacity: isAnimating ? 0.5 : 1
               }}
               aria-label={`Tip ${idx + 1}`}
             />
