@@ -1,4 +1,4 @@
-import { useMemo, useReducer } from 'react';
+import { useMemo, useReducer, useEffect } from 'react';
 import { createInitialState } from './state/initialState.js';
 import { gameReducer } from './state/gameReducer.js';
 
@@ -13,6 +13,11 @@ import { Tests } from './screens/Tests.jsx';
 export default function App(){
   const initialState = useMemo(() => createInitialState(), []);
   const [state, dispatch] = useReducer(gameReducer, initialState);
+
+  // Auto-scroll to top when screen changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [state.screen]);
 
   const reset = () => {
     if (state.screen !== 'setup' && state.screen !== 'tests') {
