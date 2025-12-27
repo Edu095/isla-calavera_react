@@ -3,6 +3,7 @@ export function SkullIsland({ state, dispatch }){
   const perSkull = state.turn.fortune === 'pirate' ? 200 : 100;
   const totalPenalty = perSkull * (state.skullIsland.collectedSkulls || 0);
   const rivals = state.players.filter(p => p.id !== active?.id);
+  const isHardcore = state.mode === 'hardcore';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -49,6 +50,10 @@ export function SkullIsland({ state, dispatch }){
           </div>
           <div className="divider" style={{ background: 'rgba(231,76,60,0.3)' }} />
           <div className="kv">
+            <span>Modo de juego</span>
+            <b>{isHardcore ? '💀 Hardcore' : '😊 Fácil'}</b>
+          </div>
+          <div className="kv">
             <span>Penalización por calavera</span>
             <b>-{perSkull} pts</b>
           </div>
@@ -65,6 +70,18 @@ export function SkullIsland({ state, dispatch }){
               fontSize: '0.9rem'
             }}>
               🏴‍☠️ <b>Carta Pirata activa:</b> Penalización doble (200 pts/calavera)
+            </div>
+          )}
+          {isHardcore && (
+            <div style={{ 
+              marginTop: '12px', 
+              padding: '8px', 
+              background: 'rgba(139,0,0,0.2)',
+              borderRadius: 'var(--radius-sm)',
+              fontSize: '0.9rem',
+              color: 'var(--text-dark)'
+            }}>
+              ⚠️ <b>Modo Hardcore:</b> Las puntuaciones pueden ser negativas
             </div>
           )}
         </div>
@@ -147,11 +164,15 @@ export function SkullIsland({ state, dispatch }){
         <h2>💥 Impacto en los Rivales</h2>
         <div className="small muted" style={{ marginBottom: '16px' }}>
           Estos jugadores perderán puntos al aplicar la penalización.
+          {isHardcore && ' En modo Hardcore pueden quedar con puntuación negativa.'}
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {rivals.map(p => {
-            const newScore = Math.max(0, p.score - totalPenalty);
+            // En modo Hardcore, permitir negativos. En modo Normal, mínimo 0
+            const newScore = isHardcore 
+              ? p.score - totalPenalty 
+              : Math.max(0, p.score - totalPenalty);
             const actualLoss = p.score - newScore;
 
             return (
@@ -162,9 +183,13 @@ export function SkullIsland({ state, dispatch }){
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   padding: '16px',
-                  background: 'linear-gradient(90deg, rgba(231,76,60,0.15) 0%, rgba(231,76,60,0.05) 100%)',
+                  background: newScore < 0 
+                    ? 'linear-gradient(90deg, rgba(139,0,0,0.3) 0%, rgba(139,0,0,0.1) 100%)'
+                    : 'linear-gradient(90deg, rgba(231,76,60,0.15) 0%, rgba(231,76,60,0.05) 100%)',
                   borderRadius: 'var(--radius-md)',
-                  border: '1px solid rgba(231,76,60,0.3)'
+                  border: newScore < 0 
+                    ? '2px solid rgba(139,0,0,0.5)'
+                    : '1px solid rgba(231,76,60,0.3)'
                 }}
               >
                 <div>
@@ -172,7 +197,15 @@ export function SkullIsland({ state, dispatch }){
                     🏴‍☠️ {p.name}
                   </div>
                   <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                    {p.score.toLocaleString('es-ES')} → {newScore.toLocaleString('es-ES')} pts
+                    {p.score.toLocaleString('es-ES')} → {' '}
+                    <span style={{ 
+                      fontWeight: 700,
+                      color: newScore < 0 ? 'var(--danger-red)' : 'inherit'
+                    }}>
+                      {newScore.toLocaleString('es-ES')}
+                    </span>
+                    {' '}pts
+                    {newScore < 0 && ' ⚠️'}
                   </div>
                 </div>
                 <div style={{
