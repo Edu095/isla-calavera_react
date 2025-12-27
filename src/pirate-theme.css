@@ -1075,3 +1075,153 @@ label {
   animation: slideIn var(--transition-normal) ease-out;
   animation-fill-mode: both;
 }
+
+
+/* ============================================
+   CARD STACK - GUÍA RÁPIDA
+   ============================================ */
+
+.card-stack-container {
+  --card-perspective: 700px;
+  --card-z-offset: 12px;
+  --card-y-offset: 7px;
+  --card-max-z-index: 100;
+  --card-swap-duration: 0.3s;
+}
+
+.card-stack {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.tip-card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+  transition: 
+    transform var(--card-swap-duration) cubic-bezier(0.4, 0, 0.2, 1),
+    opacity var(--card-swap-duration) ease-out,
+    z-index var(--card-swap-duration) step-end;
+  
+  /* Posicionamiento en stack */
+  transform: 
+    translateY(calc(var(--i) * var(--card-y-offset)))
+    translateZ(calc(var(--i) * var(--card-z-offset) * -1))
+    translateX(var(--swipe-x))
+    rotateZ(var(--swipe-rotate));
+  
+  z-index: calc(var(--card-max-z-index) - var(--i));
+  transform-style: preserve-3d;
+  pointer-events: auto;
+}
+
+.tip-card:first-child {
+  cursor: grab;
+}
+
+.tip-card:first-child:active {
+  cursor: grabbing;
+}
+
+/* Desactivar interacción en cartas que no están arriba */
+.tip-card:not(:first-child) {
+  pointer-events: none;
+}
+
+.tip-card-content {
+  width: 100%;
+  height: 100%;
+  background-image: url('/textures/wooden-box.jpg');
+  background-size: cover;
+  background-position: center;
+  border-radius: var(--radius-md);
+  padding: var(--spacing-xl);
+  box-shadow: 
+    0 20px 60px rgba(0,0,0,0.8),
+    inset 0 2px 0 rgba(255,255,255,0.1),
+    inset 0 -2px 0 rgba(0,0,0,0.6);
+  border: 3px solid rgba(212,175,55,0.4);
+  position: relative;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Overlay oscuro para legibilidad */
+.tip-card-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.5) 100%);
+  border-radius: var(--radius-md);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Contenido sobre overlay */
+.tip-card-content > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Animación de desvanecimiento para cartas posteriores */
+.tip-card:nth-child(n+4) {
+  opacity: 0;
+}
+
+.tip-card:nth-child(3) {
+  opacity: 0.3;
+}
+
+.tip-card:nth-child(2) {
+  opacity: 0.6;
+}
+
+/* Efecto de brillo en carta activa */
+.tip-card:first-child .tip-card-content {
+  border-color: rgba(255,215,0,0.6);
+  box-shadow: 
+    0 25px 70px rgba(0,0,0,0.9),
+    0 0 30px rgba(255,215,0,0.2),
+    inset 0 2px 0 rgba(255,255,255,0.15),
+    inset 0 -2px 0 rgba(0,0,0,0.6);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .card-stack-container {
+    height: 500px;
+  }
+  
+  .tip-card-content {
+    padding: var(--spacing-lg);
+    font-size: 0.9rem;
+  }
+  
+  .tip-card-content h3 {
+    font-size: 1.2rem;
+  }
+}
+
+/* Animación suave al reorganizar */
+@keyframes card-shuffle {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.tip-card {
+  animation: card-shuffle 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
