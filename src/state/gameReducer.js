@@ -288,6 +288,13 @@ function advanceAfterScoring(state, scoringPlayerIndex){
 
   const triggerPlayer = next.players[scoringPlayerIndex];
 
+  // NUEVA REGLA: A partir de la ronda 14, victoria instantánea sin fase final
+  if (next.round >= 14 && triggerPlayer.score >= TARGET_SCORE){
+    next.screen = 'finished';
+    next.winnerId = triggerPlayer.id;
+    return next;
+  }
+
   if (!next.finalPhase && triggerPlayer.score >= TARGET_SCORE){
     next.finalPhase = { triggerPlayerId: triggerPlayer.id, turnsRemaining: next.players.length - 1, leaderExtraTurn: false };
   } else if (next.finalPhase){
