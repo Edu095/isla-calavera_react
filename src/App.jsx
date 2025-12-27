@@ -14,10 +14,10 @@ export default function App(){
   const initialState = useMemo(() => createInitialState(), []);
   const [state, dispatch] = useReducer(gameReducer, initialState);
 
-  // Auto-scroll to top when screen changes
+  // Auto-scroll to top when screen changes OR when turn changes (new player or reset)
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [state.screen]);
+  }, [state.screen, state.currentPlayerIndex, state.round]);
 
   const reset = () => {
     if (state.screen !== 'setup' && state.screen !== 'tests') {
