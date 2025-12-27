@@ -15,7 +15,7 @@ export function ClothFlag({ onReset, showResetButton }) {
     const height = 400;
     
     const camera = new THREE.PerspectiveCamera(60, width / height, 1, 1000);
-    camera.position.set(0, 0, 60);
+    camera.position.set(0, 0, 70); // Moved back for wider flag
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     const renderer = new THREE.WebGLRenderer({ 
@@ -34,10 +34,10 @@ export function ClothFlag({ onReset, showResetButton }) {
     const ambientLight = new THREE.AmbientLight(0x999999);
     scene.add(ambientLight);
 
-    // Flag geometry
-    const flagWidth = 50;
-    const flagHeight = 32;
-    const segmentsW = 40;
+    // Flag geometry - More elongated (wider)
+    const flagWidth = 60;  // Increased from 50
+    const flagHeight = 30; // Reduced from 32 for more elongated ratio
+    const segmentsW = 50;  // More segments for smoother wave
     const segmentsH = 25;
 
     const geometry = new THREE.PlaneGeometry(
@@ -47,97 +47,120 @@ export function ClothFlag({ onReset, showResetButton }) {
       segmentsH
     );
 
-    // Create canvas texture with skull and title
-    const canvas = document.createElement('canvas');
-    canvas.width = 1024;
-    canvas.height = 640;
-    const ctx = canvas.getContext('2d');
+    // Create texture - Try to load image, fallback to canvas
+    const createTexture = () => {
+      return new Promise((resolve) => {
+        // Try to load image from public folder
+        const textureLoader = new THREE.TextureLoader();
+        
+        textureLoader.load(
+          '/flag-title.png', // Image path in public folder
+          (loadedTexture) => {
+            console.log('Flag image loaded successfully');
+            resolve(loadedTexture);
+          },
+          undefined,
+          (error) => {
+            // Fallback: create canvas with text
+            console.log('Image not found, using canvas fallback');
+            const canvas = document.createElement('canvas');
+            canvas.width = 1024;
+            canvas.height = 512; // Adjusted ratio for wider flag
+            const ctx = canvas.getContext('2d');
 
-    // Black background
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // Black background
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Draw skull
-    ctx.font = 'bold 180px serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#ffffff';
-    ctx.shadowColor = 'rgba(0,0,0,0.8)';
-    ctx.shadowBlur = 20;
-    ctx.fillText('☠️', canvas.width / 2, canvas.height / 2 - 80);
+            // Draw skull
+            ctx.font = 'bold 160px serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = '#ffffff';
+            ctx.shadowColor = 'rgba(0,0,0,0.8)';
+            ctx.shadowBlur = 20;
+            ctx.fillText('☠️', canvas.width / 2, canvas.height / 2 - 60);
 
-    // Draw title
-    ctx.font = 'bold 120px "Pirata One", cursive';
-    ctx.fillStyle = '#d4af37';
-    ctx.shadowColor = 'rgba(212,175,55,0.8)';
-    ctx.shadowBlur = 25;
-    ctx.fillText('Isla Calavera', canvas.width / 2, canvas.height / 2 + 100);
+            // Draw title
+            ctx.font = 'bold 100px "Pirata One", cursive';
+            ctx.fillStyle = '#d4af37';
+            ctx.shadowColor = 'rgba(212,175,55,0.8)';
+            ctx.shadowBlur = 25;
+            ctx.fillText('Isla Calavera', canvas.width / 2, canvas.height / 2 + 80);
 
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.needsUpdate = true;
-
-    const material = new THREE.MeshLambertMaterial({
-      map: texture,
-      side: THREE.DoubleSide
-    });
-
-    const flag = new THREE.Mesh(geometry, material);
-    scene.add(flag);
-
-    sceneRef.current = { scene, camera, renderer, flag, geometry };
-
-    // Wave animation parameters
-    const waveParams = {
-      horizontal: 0.4,
-      vertical: 0.3,
-      swing: 0.8,
-      speed: 0.3
+            const canvasTexture = new THREE.CanvasTexture(canvas);
+            resolve(canvasTexture);
+          }
+        );
+      });
     };
 
-    // Store original vertex positions
-    const originalPositions = [];
-    for (let i = 0; i < geometry.attributes.position.count; i++) {
-      originalPositions.push({
-        x: geometry.attributes.position.getX(i),
-        y: geometry.attributes.position.getY(i),
-        z: geometry.attributes.position.getZ(i)
+    createTexture().then((texture) => {
+      texture.needsUpdate = true;
+
+      const material = new THREE.MeshLambertMaterial({
+        map: texture,
+        side: THREE.DoubleSide
       });
-    }
 
-    // Animation loop
-    const animate = () => {
-      const time = Date.now() * waveParams.speed / 50;
+      const flag = new THREE.Mesh(geometry, material);
+      scene.add(flag);
 
-      // Update vertices for wave effect
-      for (let y = 0; y <= segmentsH; y++) {
-        for (let x = 0; x <= segmentsW; x++) {
-          const index = x + y * (segmentsW + 1);
-          const original = originalPositions[index];
-          
-          // Calculate wave - REMOVED the x/4 multiplier to allow left edge to move
-          const waveX = waveParams.horizontal * x;
-          const waveY = waveParams.vertical * y;
-          
-          // Base wave calculation
-          const baseWave = Math.sin(waveX + waveY - time) * waveParams.swing;
-          
-          // Apply progressive amplitude (still increases from left to right but left moves too)
-          const progressiveAmplitude = 0.3 + (x / segmentsW) * 0.7; // 30% at left, 100% at right
-          const z = baseWave * progressiveAmplitude;
-          
-          // Update vertex position
-          geometry.attributes.position.setZ(index, z);
-        }
+      sceneRef.current = { scene, camera, renderer, flag, geometry, texture };
+
+      // Wave animation parameters - Updated values
+      const waveParams = {
+        horizontal: 0.3,
+        vertical: 0.2,
+        swing: 2.5,
+        speed: 0.15
+      };
+
+      // Store original vertex positions
+      const originalPositions = [];
+      for (let i = 0; i < geometry.attributes.position.count; i++) {
+        originalPositions.push({
+          x: geometry.attributes.position.getX(i),
+          y: geometry.attributes.position.getY(i),
+          z: geometry.attributes.position.getZ(i)
+        });
       }
 
-      geometry.attributes.position.needsUpdate = true;
-      geometry.computeVertexNormals();
+      // Animation loop
+      const animate = () => {
+        const time = Date.now() * waveParams.speed / 50;
 
-      renderer.render(scene, camera);
-      animationRef.current = requestAnimationFrame(animate);
-    };
+        // Update vertices for wave effect
+        for (let y = 0; y <= segmentsH; y++) {
+          for (let x = 0; x <= segmentsW; x++) {
+            const index = x + y * (segmentsW + 1);
+            const original = originalPositions[index];
+            
+            // Calculate wave
+            const waveX = waveParams.horizontal * x;
+            const waveY = waveParams.vertical * y;
+            
+            // Base wave calculation
+            const baseWave = Math.sin(waveX + waveY - time) * waveParams.swing;
+            
+            // Progressive amplitude (30% at left, 100% at right)
+            const progressiveAmplitude = 0.3 + (x / segmentsW) * 0.7;
+            const z = baseWave * progressiveAmplitude;
+            
+            // Update vertex position
+            geometry.attributes.position.setZ(index, z);
+          }
+        }
 
-    animate();
+        geometry.attributes.position.needsUpdate = true;
+        geometry.computeVertexNormals();
+
+        renderer.render(scene, camera);
+        animationRef.current = requestAnimationFrame(animate);
+      };
+
+      animate();
+    });
 
     // Handle window resize
     const handleResize = () => {
@@ -159,9 +182,11 @@ export function ClothFlag({ onReset, showResetButton }) {
       if (containerRef.current && renderer.domElement) {
         containerRef.current.removeChild(renderer.domElement);
       }
-      geometry.dispose();
-      material.dispose();
-      texture.dispose();
+      if (sceneRef.current) {
+        const { geometry, texture } = sceneRef.current;
+        if (geometry) geometry.dispose();
+        if (texture) texture.dispose();
+      }
       renderer.dispose();
     };
   }, []);
