@@ -1078,8 +1078,8 @@ label {
 
 
 /* ============================================
-   CARD STACK - GUÍA RÁPIDA - IMPROVED
-   Inspired by CodePen card stack effects
+   CARD STACK - GUÍA RÁPIDA - CORREGIDO
+   Sin transparencia, sin scroll, animación mejorada
    ============================================ */
 
 .card-stack-wrapper {
@@ -1107,26 +1107,18 @@ label {
   transform-style: preserve-3d;
   backface-visibility: hidden;
   
-  /* Smooth transitions */
-  transition: 
-    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow 0.3s ease,
-    z-index 0.4s step-end;
-  
   /* Interactive cursor */
-  cursor: grab;
   user-select: none;
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
 
 .tip-card.active {
-  /* Active card has highest z-index */
+  cursor: grab;
   z-index: 100 !important;
 }
 
-.tip-card:active {
+.tip-card.active:active {
   cursor: grabbing;
 }
 
@@ -1134,10 +1126,11 @@ label {
   width: 100%;
   height: 100%;
   
-  /* Wooden texture background */
+  /* Wooden texture background - SIN TRANSPARENCIA */
   background-image: url('/textures/wooden-box.jpg');
   background-size: cover;
   background-position: center;
+  background-color: #5a3d2b; /* Color sólido de respaldo */
   
   /* Rounded corners */
   border-radius: var(--radius-lg);
@@ -1146,12 +1139,12 @@ label {
   padding: var(--spacing-xl);
   
   /* Golden border for pirate aesthetic */
-  border: 3px solid rgba(212, 175, 55, 0.4);
+  border: 3px solid rgba(212, 175, 55, 0.6);
   
   /* Enhanced shadows for depth */
   box-shadow: 
-    0 30px 70px rgba(0, 0, 0, 0.85),
-    0 10px 30px rgba(0, 0, 0, 0.5),
+    0 30px 70px rgba(0, 0, 0, 0.9),
+    0 15px 40px rgba(0, 0, 0, 0.6),
     inset 0 2px 4px rgba(255, 255, 255, 0.1),
     inset 0 -2px 4px rgba(0, 0, 0, 0.6);
   
@@ -1159,39 +1152,16 @@ label {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: stretch;
   
-  /* Overflow for scrollable content */
-  overflow-y: auto;
-  overflow-x: hidden;
+  /* SIN OVERFLOW SCROLL - contenido fijo */
+  overflow: hidden;
   
   /* Preserve 3D for child elements */
   transform-style: preserve-3d;
-  
-  /* Smooth scrollbar */
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 215, 0, 0.5) transparent;
 }
 
-/* Webkit scrollbar styling */
-.tip-card-content::-webkit-scrollbar {
-  width: 6px;
-}
-
-.tip-card-content::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-}
-
-.tip-card-content::-webkit-scrollbar-thumb {
-  background: rgba(255, 215, 0, 0.5);
-  border-radius: 3px;
-}
-
-.tip-card-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 215, 0, 0.7);
-}
-
-/* Dark overlay for better text readability */
+/* Overlay oscuro OPACO para mejor legibilidad - SIN TRANSPARENCIA */
 .tip-card-content::before {
   content: '';
   position: absolute;
@@ -1199,11 +1169,13 @@ label {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0.35) 0%,
-    rgba(0, 0, 0, 0.55) 100%
-  );
+  /* Overlay sólido oscuro */
+  background: 
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.5) 0%,
+      rgba(0, 0, 0, 0.65) 100%
+    );
   border-radius: var(--radius-lg);
   pointer-events: none;
   z-index: 1;
@@ -1218,8 +1190,8 @@ label {
   right: 0;
   bottom: 0;
   background: 
-    linear-gradient(88deg, transparent 25%, rgba(0, 0, 0, 0.1) 25.1%, transparent 25.3%),
-    linear-gradient(92deg, transparent 60%, rgba(255, 255, 255, 0.04) 60.1%, transparent 60.3%);
+    linear-gradient(88deg, transparent 25%, rgba(0, 0, 0, 0.15) 25.1%, transparent 25.3%),
+    linear-gradient(92deg, transparent 60%, rgba(255, 255, 255, 0.05) 60.1%, transparent 60.3%);
   border-radius: var(--radius-lg);
   pointer-events: none;
   z-index: 1;
@@ -1233,41 +1205,18 @@ label {
 
 /* Active card (top card) gets golden glow */
 .tip-card.active .tip-card-content {
-  border-color: rgba(255, 215, 0, 0.7);
+  border-color: rgba(255, 215, 0, 0.8);
   box-shadow: 
     0 35px 80px rgba(0, 0, 0, 0.95),
-    0 15px 40px rgba(0, 0, 0, 0.6),
-    0 0 40px rgba(255, 215, 0, 0.25),
+    0 20px 50px rgba(0, 0, 0, 0.7),
+    0 0 40px rgba(255, 215, 0, 0.3),
     inset 0 2px 4px rgba(255, 255, 255, 0.15),
     inset 0 -2px 4px rgba(0, 0, 0, 0.6);
 }
 
-/* Wiggle animation for top card to indicate interactivity */
-@keyframes card-wiggle {
-  0%, 100% {
-    transform: rotate(0deg);
-  }
-  25% {
-    transform: rotate(-1deg);
-  }
-  75% {
-    transform: rotate(1deg);
-  }
-}
-
-.tip-card.active:not(:active) {
-  animation: card-wiggle 2s ease-in-out infinite;
-}
-
 /* Hover effect for top card */
 .tip-card.active:hover .tip-card-content {
-  border-color: rgba(255, 215, 0, 0.9);
-  box-shadow: 
-    0 40px 90px rgba(0, 0, 0, 1),
-    0 20px 50px rgba(0, 0, 0, 0.7),
-    0 0 50px rgba(255, 215, 0, 0.35),
-    inset 0 2px 4px rgba(255, 255, 255, 0.2),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.6);
+  border-color: rgba(255, 215, 0, 0.95);
 }
 
 /* Responsive adjustments */
