@@ -45,29 +45,27 @@ export default function App(){
     <div className="appFrame">
       <div className="container">
         {showHeader && (
-          <header className="card topbar fade-in">
-            <div className="topbarRow">
-              <div>
-                <h1 className="brandTitle">🏴‍☠️ Isla Calavera 💀</h1>
-                <div className="subtitle">¡Arrrrg grumete!</div>
+          <header className="pirate-flag-header">
+            <div className="flag-pole"></div>
+            <div className="pirate-flag">
+              <div className="flag-content">
+                <div className="skull-icon">☠️</div>
+                <h1 className="flag-title">Isla Calavera</h1>
               </div>
-
-              <div className="headerActions">
-                {state.screen !== 'setup' && state.screen !== 'tests' && state.screen !== 'names' && (
-                  <button
-                    className="btn btn-danger"
-                    onClick={reset}
-                    title="Empezar una nueva partida desde cero"
-                  >
-                    🔄 Nueva Partida
-                  </button>
-                )}
-              </div>
+              {state.screen !== 'setup' && state.screen !== 'tests' && state.screen !== 'names' && (
+                <button
+                  className="btn btn-danger flag-reset-btn"
+                  onClick={reset}
+                  title="Empezar una nueva partida desde cero"
+                >
+                  🔄 Nueva Partida
+                </button>
+              )}
             </div>
           </header>
         )}
 
-        <div style={{ height: 12 }} />
+        <div style={{ height: 24 }} />
 
         {state.screen === 'setup' && <Setup state={state} dispatch={dispatch} />}
         {state.screen === 'names' && <Names state={state} dispatch={dispatch} />}
