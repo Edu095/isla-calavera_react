@@ -535,6 +535,17 @@ label {
   }
 }
 
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.02);
+  }
+}
+
 .fade-in {
   animation: fadeIn var(--transition-normal) ease-out;
 }
