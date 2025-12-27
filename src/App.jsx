@@ -24,8 +24,17 @@ export default function App(){
     }
   };
   
-  const showScoreboard = ['turn', 'skullIsland', 'finished'].includes(state.screen);
-  const showHeader = state.screen !== 'finished'; // Hide header on finished screen for cleaner look
+  const showScoreboard = ['turn', 'skullIsland'].includes(state.screen);
+  const showHeader = state.screen !== 'finished';
+
+  // Finished screen renders its own container
+  if (state.screen === 'finished') {
+    return (
+      <div className="appFrame">
+        <Finished state={state} dispatch={dispatch} />
+      </div>
+    );
+  }
 
   return (
     <div className="appFrame">
@@ -60,7 +69,6 @@ export default function App(){
         {showScoreboard && <Scoreboard state={state} />}
         {state.screen === 'turn' && <Turn state={state} dispatch={dispatch} />}
         {state.screen === 'skullIsland' && <SkullIsland state={state} dispatch={dispatch} />}
-        {state.screen === 'finished' && <Finished state={state} dispatch={dispatch} />}
         {state.screen === 'tests' && <Tests onBack={() => dispatch({ type: 'NAVIGATE', screen: 'setup' })} />}
       </div>
     </div>
