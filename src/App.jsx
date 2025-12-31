@@ -58,6 +58,30 @@ export default function App(){
         {state.screen === 'turn' && <Turn state={state} dispatch={dispatch} />}
         {state.screen === 'skullIsland' && <SkullIsland state={state} dispatch={dispatch} />}
         {state.screen === 'tests' && <Tests onBack={() => dispatch({ type: 'NAVIGATE', screen: 'setup' })} />}
+
+        <footer style={{ 
+          marginTop: '48px', 
+          marginBottom: '24px', 
+          textAlign: 'center',
+          color: 'var(--text-muted)',
+          fontSize: '0.9rem'
+        }}>
+          <p style={{ marginBottom: '8px' }}>
+            Desarrollado con ☠️ y React
+          </p>
+          <a 
+            href="https://github.com/Edu095/isla-calavera_react" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{ 
+              color: 'var(--accent-gold)', 
+              textDecoration: 'none',
+              fontWeight: 500
+            }}
+          >
+            Ver código en GitHub
+          </a>
+        </footer>
       </div>
     </div>
   );
