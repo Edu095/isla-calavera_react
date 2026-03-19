@@ -1,4 +1,4 @@
-import { useMemo, useReducer, useEffect } from 'react';
+import { useMemo, useReducer, useEffect, useState } from 'react';
 import { createInitialState } from './state/initialState.js';
 import { gameReducer } from './state/gameReducer.js';
 
@@ -9,11 +9,13 @@ import { SkullIsland } from './screens/SkullIsland.jsx';
 import { Finished } from './screens/Finished.jsx';
 import { Scoreboard } from './components/Scoreboard.jsx';
 import { ClothFlag } from './components/ClothFlag.jsx';
+import { RulesModal } from './components/RulesModal.jsx';
 import { Tests } from './screens/Tests.jsx';
 
 export default function App(){
   const initialState = useMemo(() => createInitialState(), []);
   const [state, dispatch] = useReducer(gameReducer, initialState);
+  const [rulesOpen, setRulesOpen] = useState(false);
 
   // Auto-scroll to top when screen changes OR when turn changes (new player or reset)
   useEffect(() => {
@@ -29,60 +31,64 @@ export default function App(){
       dispatch({ type: 'RESET_GAME', initialState: initialState });
     }
   };
-  
+
   const showScoreboard = ['turn', 'skullIsland'].includes(state.screen);
   const showHeader = state.screen !== 'finished';
   const showResetButton = state.screen !== 'setup' && state.screen !== 'tests' && state.screen !== 'names';
 
-  // Finished screen renders its own container
-  if (state.screen === 'finished') {
-    return (
-      <div className="appFrame">
-        <Finished state={state} dispatch={dispatch} />
-      </div>
-    );
-  }
-
   return (
     <div className="appFrame">
-      <div className="container">
-        {showHeader && (
-          <ClothFlag onReset={reset} showResetButton={showResetButton} />
-        )}
+      {state.screen === 'finished' ? (
+        <Finished state={state} dispatch={dispatch} />
+      ) : (
+        <div className="container">
+          {showHeader && (
+            <ClothFlag onReset={reset} showResetButton={showResetButton} />
+          )}
 
-        <div style={{ height: 24 }} />
+          <div style={{ height: 24 }} />
 
-        {state.screen === 'setup' && <Setup state={state} dispatch={dispatch} />}
-        {state.screen === 'names' && <Names state={state} dispatch={dispatch} />}
-        {showScoreboard && <Scoreboard state={state} />}
-        {state.screen === 'turn' && <Turn state={state} dispatch={dispatch} />}
-        {state.screen === 'skullIsland' && <SkullIsland state={state} dispatch={dispatch} />}
-        {state.screen === 'tests' && <Tests onBack={() => dispatch({ type: 'NAVIGATE', screen: 'setup' })} />}
+          {state.screen === 'setup' && <Setup state={state} dispatch={dispatch} />}
+          {state.screen === 'names' && <Names state={state} dispatch={dispatch} />}
+          {showScoreboard && <Scoreboard state={state} />}
+          {state.screen === 'turn' && <Turn state={state} dispatch={dispatch} />}
+          {state.screen === 'skullIsland' && <SkullIsland state={state} dispatch={dispatch} />}
+          {state.screen === 'tests' && <Tests onBack={() => dispatch({ type: 'NAVIGATE', screen: 'setup' })} />}
 
-        <footer style={{ 
-          marginTop: '48px', 
-          marginBottom: '24px', 
-          textAlign: 'center',
-          color: 'var(--text-muted)',
-          fontSize: '0.9rem'
-        }}>
-          <p style={{ marginBottom: '8px' }}>
-            Desarrollado con ☠️ y React
-          </p>
-          <a 
-            href="https://github.com/Edu095/isla-calavera_react" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            style={{ 
-              color: 'var(--accent-gold)', 
-              textDecoration: 'none',
-              fontWeight: 500
-            }}
-          >
-            Ver código en GitHub
-          </a>
-        </footer>
-      </div>
+          <footer style={{
+            marginTop: '48px',
+            marginBottom: '24px',
+            textAlign: 'center',
+            color: 'var(--text-muted)',
+            fontSize: '0.9rem'
+          }}>
+            <p style={{ marginBottom: '8px' }}>
+              Desarrollado con ☠️ y React
+            </p>
+            <a
+              href="https://github.com/Edu095/isla-calavera_react"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                color: 'var(--accent-gold)',
+                textDecoration: 'none',
+                fontWeight: 500
+              }}
+            >
+              Ver código en GitHub
+            </a>
+          </footer>
+        </div>
+      )}
+
+      <button
+        className="btn btn-ghost rules-fab"
+        onClick={() => setRulesOpen(true)}
+        title="Ver reglas del juego"
+      >
+        📜 Reglas
+      </button>
+      <RulesModal open={rulesOpen} onClose={() => setRulesOpen(false)} />
     </div>
   );
 }
