@@ -121,6 +121,8 @@ export function Setup({ state, dispatch }){
       
       // Mover carta al final después de la animación
       setTimeout(() => {
+        setOffset({ x: 0, y: 0 });
+        setIsAnimating(false);
         setCards(prev => {
           const newCards = [...prev];
           const topCard = newCards.shift();
@@ -128,8 +130,6 @@ export function Setup({ state, dispatch }){
           return newCards;
         });
         setCurrentCardIndex((prev) => (prev + 1) % TIPS.length);
-        setOffset({ x: 0, y: 0 });
-        setIsAnimating(false);
       }, 300);
     } else {
       // Volver a la posición original con animación
@@ -266,7 +266,8 @@ export function Setup({ state, dispatch }){
             perspective: '1200px',
             userSelect: 'none',
             WebkitUserSelect: 'none',
-            touchAction: isDragging ? 'none' : 'pan-y'
+            touchAction: isDragging ? 'none' : 'pan-y',
+            overflow: 'hidden'
           }}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -283,9 +284,7 @@ export function Setup({ state, dispatch }){
               
               // Opacidad visible para el stack
               let opacity = 1;
-              //if (index === 1) opacity = 1; // Segunda carta visible
-              //if (index === 2) opacity = 1; // Tercera carta visible
-              //if (index > 2) opacity = 0; // Las demás ocultas
+              if (index > 2) opacity = 0;
               
               // Transformación para la carta superior
               let transform = `scale(${scale}) translateY(${yOffset}px)`;
@@ -306,7 +305,7 @@ export function Setup({ state, dispatch }){
 
               return (
                 <div
-                  key={`${tip.title}-${index}`}
+                  key={tip.title}
                   className={`tip-card ${isTopCard ? 'active' : ''}`}
                   style={{
                     position: 'absolute',
